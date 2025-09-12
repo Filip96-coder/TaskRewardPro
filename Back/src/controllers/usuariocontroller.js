@@ -24,14 +24,14 @@ export const obtenerUsuarios = async (req, res) => {
 
 export const actualizausuario = async (req, res) => {
     try {
-      const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+      const usuarios = await Usuario.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
         runValidators: true, 
       });
   
-      if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
+      if (!usuarios) return res.status(404).json({ error: "Usuario no encontrado" });
   
-      res.json(user);
+      res.json(usuarios);
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
@@ -39,9 +39,9 @@ export const actualizausuario = async (req, res) => {
 
   export const eliminarusuario = async (req, res) => {
     try {
-      const user = await User.findByIdAndDelete(req.params.id);
+      const usuarios = await Usuario.findByIdAndDelete(req.params.id);
   
-      if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
+      if (!usuarios) return res.status(404).json({ error: "Usuario no encontrado" });
   
       res.json({ message: "Usuario eliminado correctamente" });
     } catch (error) {
