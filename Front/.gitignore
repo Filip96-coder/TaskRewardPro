@@ -1,0 +1,17 @@
+# Dependencias (npm/yarn/pnpm)
+node_modules/
+
+# Build outputs
+dist/
+.vite/
+
+# Archivos de entorno/locales
+.env
+.env.local
+.DS_Store
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
