@@ -1,9 +1,24 @@
 import Usuario from "../models/usuario.js";
+import Lider from "../models/lider.js";
+import Trabajador from "../models/trabajador.js";
+import Admin from "../models/admin.js";
 
-// Crear usuario
 export const crearUsuario = async (req, res) => {
   try {
-    const usuario = new Usuario(req.body);
+    let usuario;
+    switch (req.body.rol) {
+      case "Lider":
+        usuario = new Lider(req.body);
+        break;
+      case "Trabajador":
+        usuario = new Trabajador(req.body);
+        break;
+      case "Admin":
+        usuario = new Admin(req.body);
+        break;
+      default:
+        usuario = new Usuario(req.body);
+    }
     const usuarioGuardado = await usuario.save();
     res.status(201).json(usuarioGuardado);
   } catch (error) {
@@ -48,3 +63,13 @@ export const actualizausuario = async (req, res) => {
       res.status(500).json({ error: error.message });
     }
   };
+
+  export const obtenerPorRol = async (req, res) => {
+  try {
+    const { rol } = req.params;
+    const usuarios = await Usuario.find({ rol });
+    res.json(usuarios);
+  } catch (error) {
+    res.status(500).json({ msg: "Error al obtener usuarios por rol", error });
+  }
+};
