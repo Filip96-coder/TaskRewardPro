@@ -17,7 +17,7 @@ app.use(cors());
 app.use(express.json());
 
 // Rutas
-app.use("/api/users", usuarioRoutes);
+app.use("/api/usuarios", usuarioRoutes);
 app.use("/api/historial-canje", historialCanjeRoutes);
 app.use("/api/recompensas", recompensaRoutes);
 app.use("/api/metas", metaRoutes);
