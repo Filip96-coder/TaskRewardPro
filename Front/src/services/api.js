@@ -30,7 +30,7 @@ export async function getProfile(token) {
   return http('/api/auth/me', { method: 'GET', token })
 }
 
-// ---------------- MOCK mode (sin backend) ---------------- //
+// MOCK mode (sin backend) //
 function delay(ms){ return new Promise(r=>setTimeout(r, ms)) }
 const mockDBKey = 'trp_mock_users'
 
@@ -41,7 +41,7 @@ async function mockHttp(path, { method, data, token }){
   if (path === '/api/auth/register' && method === 'POST') {
     const exists = db.find(u => u.email === data.email)
     if (exists) throw new Error('El email ya está registrado')
-    const user = { id: crypto.randomUUID(), name: data.name || '', email: data.email }
+    const user = { id: crypto.randomUUID(), name: data.name || '', email: data.email, points: 850 }
     db.push({ ...user, password: data.password })
     localStorage.setItem(mockDBKey, JSON.stringify(db))
     return { token: 'mock.' + user.id, user }

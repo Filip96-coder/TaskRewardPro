@@ -29,11 +29,13 @@ export default function Register(){
     }
   }
 
-  return (
+return (
     <div className="container">
-      <div className="card" style={{maxWidth:520, margin:'24px auto'}}>
-        <h2>Crear usuario</h2>
-        <p style={{color:'var(--muted)'}}>Registra un usuario para acceder.</p>
+      <div className="auth-card card">
+        <div className="auth-header">
+          <h1 className="auth-title">Crear cuenta</h1>
+          <p className="auth-subtitle">Regístrate para empezar a usar Task Reward Pro.</p>
+        </div>
         <form onSubmit={onSubmit}>
           <label>Nombre</label>
           <input value={name} onChange={e=>setName(e.target.value)} placeholder="Nombre y apellido" />
@@ -44,9 +46,10 @@ export default function Register(){
           <label>Confirmar contraseña</label>
           <input type="password" value={confirm} onChange={e=>setConfirm(e.target.value)} placeholder="Repite la contraseña" />
           {error && <div className="error">{error}</div>}
-          <div className="row" style={{marginTop:12}}>
-            <button className="btn" disabled={loading}>{loading?'Creando...':'Crear'}</button>
-            <Link to="/login" className="link">Ya tengo cuenta</Link>
+          <button className="btn auth-btn" disabled={loading}>{loading?'Creando...':'Crear cuenta'}</button>
+          <div className="row" style={{marginTop:10, justifyContent:'center'}}>
+            <span style={{color:'var(--muted)'}}>¿Ya tienes cuenta?</span>
+            <Link to="/login" className="link">Inicia sesión</Link>
           </div>
         </form>
       </div>
