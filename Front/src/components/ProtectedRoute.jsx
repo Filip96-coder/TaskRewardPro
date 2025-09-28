@@ -10,6 +10,12 @@ export default function ProtectedRoute() {
   if (loading) return <div style={{padding:24}}>Cargando…</div>
   if (!user) return <Navigate to="/login" replace state={{ from: location }} />
 
+   const path = location.pathname.replace(/^\/app\/?/, '')
+  const title = ({
+    'dashboard': 'Dashboard',
+    'tareas/registro': 'Registro de Tareas'
+  })[path] || 'Task Reward Pro'
+
   return (
     <div className="layout">
       <Sidebar />

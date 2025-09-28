@@ -33,6 +33,14 @@ export async function getProfile(token) {
 // MOCK mode (sin backend) //
 function delay(ms){ return new Promise(r=>setTimeout(r, ms)) }
 const mockDBKey = 'trp_mock_users'
+const mockTasksKey = 'trp_mock_tasks'
+
+export async function createTask(payload){
+  return http('/api/tasks', { method: 'POST', data: payload })
+}
+export async function listTasks(){
+  return http('/api/tasks', { method: 'GET' })
+}
 
 async function mockHttp(path, { method, data, token }){
   await delay(400)
@@ -61,6 +69,24 @@ async function mockHttp(path, { method, data, token }){
     if (!user) throw new Error('Usuario no encontrado')
     const { password, ...safe } = user
     return safe
+  }
+
+  if (path === '/api/tasks' && method === 'POST') {
+    const tasks = JSON.parse(localStorage.getItem(mockTasksKey) || '[]')
+    const task = {
+      id: crypto.randomUUID(),
+      ...data,
+      createdAt: new Date().toISOString(),
+      status: 'ENVIADA' // Flujo: BORRADOR | ENVIADA | APROBADA | RECHAZADA
+    }
+    tasks.unshift(task)
+    localStorage.setItem(mockTasksKey, JSON.stringify(tasks))
+    return task
+  }
+
+  if (path === '/api/tasks' && method === 'GET') {
+    const tasks = JSON.parse(localStorage.getItem(mockTasksKey) || '[]')
+    return tasks
   }
 
   throw new Error('Ruta mock no implementada: ' + path)
