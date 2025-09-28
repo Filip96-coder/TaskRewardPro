@@ -4,6 +4,14 @@ import { useAuth } from '../context/AuthContext.jsx'
 
 export default function Sidebar(){
   const { user, logout } = useAuth()
+  const link = (to, label) => (
+    <NavLink
+      to={to}
+      className={({isActive}) => 'navItem' + (isActive ? ' active' : '')}
+    >
+      {label}
+    </NavLink>
+  )
   return (
     <aside className="aside">
       <div className="brand">Task Reward Pro</div>

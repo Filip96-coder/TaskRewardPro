@@ -70,3 +70,12 @@ input:focus{box-shadow:0 0 0 6px var(--ring);border-color:var(--primary)}
 .listItem:hover{background:#10162b}
 .progressBar{height:10px;background:#0f1426;border:1px solid var(--border);border-radius:999px;overflow:hidden}
 .progressInner{height:100%;background:var(--success);width:60%}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  border-radius:999px;
+  background:#0f1426;
+  border:1px solid var(--border);
+  font-size:12px;
+}
