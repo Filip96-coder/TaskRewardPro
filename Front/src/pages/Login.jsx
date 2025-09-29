@@ -11,7 +11,7 @@ export default function Login(){
   const [error,setError] = useState('')
   const navigate = useNavigate()
   const location = useLocation()
-  const from = location.state?.from?.pathname || '/dashboard'
+  const from = location.state?.from?.pathname || '/app/dashboard'
 
   useEffect(()=>{
     const saved = localStorage.getItem('trp_saved_email')
@@ -78,7 +78,7 @@ export default function Login(){
                   try{ await api.register({ name:'Usuario Demo', email:demoEmail, password:demoPass }) }catch{}
                   await login(demoEmail, demoPass)
                 }
-                navigate('/dashboard', { replace:true })
+                navigate('/app/dashboard', { replace:true })
               }catch{ setError('No se pudo entrar en modo demo') }
               finally{ setLoading(false) }
             }}

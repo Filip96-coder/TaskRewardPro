@@ -24,13 +24,13 @@ export default function Sidebar(){
       </div>
 
       <nav style={{display:'grid',gap:6}}>
-        <NavLink to="/dashboard" className={({isActive}) => 'navItem' + (isActive ? ' active' : '')}>Dashboard</NavLink>
-        <a className="navItem" href="#" onClick={e=>e.preventDefault()}>Tareas</a>
-        <a className="navItem" href="#" onClick={e=>e.preventDefault()}>Metas</a>
-        <a className="navItem" href="#" onClick={e=>e.preventDefault()}>Recompensas</a>
-        <a className="navItem" href="#" onClick={e=>e.preventDefault()}>Historial de Canjes</a>
-        <a className="navItem" href="#" onClick={e=>e.preventDefault()}>Ranking</a>
-        <a className="navItem" href="#" onClick={e=>e.preventDefault()}>Usuarios</a>
+          {link('/app/dashboard', 'Dashboard')}
+        {link('/app/tareas/registro', 'Tareas')}
+        {link('/app/metas', 'Metas')}
+        {link('/app/recompensas', 'Recompensas')}
+        {link('/app/canjes', 'Historial de Canjes')}
+        {link('/app/ranking', 'Ranking')}
+        {link('/app/usuarios', 'Usuarios')}
       </nav>
 
       <div style={{marginTop:'auto'}}>

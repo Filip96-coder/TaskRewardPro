@@ -21,7 +21,7 @@ export default function Register(){
     try{
       setLoading(true)
       await register({ name, email, password })
-      navigate('/dashboard', { replace:true })
+      navigate('/app/dashboard', { replace:true })
     }catch(err){
       setError(err.message || 'Error al crear usuario')
     }finally{
