@@ -8,6 +8,8 @@ function sign(u) {
 
 export async function register(req, res) {
   try {
+    console.log("📩 Body recibido:", req.body); // 👈 ver qué llega del front
+
     const { name = "", email, password } = req.body;
     if (!email || !password) return res.status(400).json({ message: "Email y password son requeridos" });
 
@@ -21,6 +23,7 @@ export async function register(req, res) {
     const safe = { id: user._id, name: user.name, email: user.email, role: user.role, points: user.points };
     res.status(201).json({ token, user: safe });
   } catch (e) {
+    console.error("❌ Error en register:", e);
     res.status(500).json({ message: "Error registrando usuario" });
   }
 }
