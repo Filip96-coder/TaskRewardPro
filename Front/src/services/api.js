@@ -1,5 +1,6 @@
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === '1'
+console.log("📡 BASE_URL =", BASE_URL, "USE_MOCK =", USE_MOCK)
 
 async function http(path, { method = 'GET', data, token } = {}) {
   if (USE_MOCK) return mockHttp(path, { method, data, token })

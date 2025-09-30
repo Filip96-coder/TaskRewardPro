@@ -4,10 +4,10 @@ const usuarioSchema = new mongoose.Schema({
   nombre: { type: String, required: true, trim: true },
   email: { type: String, required: false, unique: true, trim: true },
   password: { type: String, required: true },
-  rol: { type: String, required: true, enum: ["Admin", "Lider", "Trabajador"] }, // Nuevo campo
-}, {
+  rol: { type: String, enum: ["Admin", "Lider", "Trabajador"], default: "Trabajador" },
+  points: { type: Number, default: 0} 
+} ,{
   timestamps: true,
-  discriminatorKey: "rol", // Importante para discriminadores
 });
 
 const Usuario = mongoose.model("Usuario", usuarioSchema);
