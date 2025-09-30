@@ -1,12 +1,15 @@
 import mongoose from "mongoose";
 
 const tareaSchema = new mongoose.Schema({
-  tareaId: { type: Number, required: true, unique: true },
-  titulo: { type: String, required: true },
-  descripcion: { type: String },
-  estado: { type: Boolean, default: false },
-  fechaInicio: { type: Date },
-  fechaFin: { type: Date }
+  title: { type: String, required: true },            
+  description: { type: String, required: true },
+  dueDate: { type: Date },                             
+  points: { type: Number, default: 0 },
+  attachments: [{ name: String, type: String, size: Number }],
+  status: { type: String, enum: ["Pendiente", "Completada"], default: "Pendiente" },
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "Usuario" }
+},{timestamps:true
+
 });
 
 const Tarea = mongoose.model("Tarea", tareaSchema);

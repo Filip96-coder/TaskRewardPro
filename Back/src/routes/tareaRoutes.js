@@ -6,11 +6,13 @@ import {
   eliminarTarea
 } from "../controllers/tareaController.js";
 
+import { authRequired } from "../middleware/auth.js";
+import { requireRol } from "../middleware/rolmiddleware.js";
+
 const router = express.Router();
 
-router.post("/", crearTarea);
+router.post("/", authRequired, requireRol("Admin"), crearTarea);
 router.get("/", obtenerTareas);
-router.put("/:id", actualizarTarea);
-router.delete("/:id", eliminarTarea);
-
+router.put("/:id", authRequired, requireRol("Admin"), actualizarTarea);
+router.delete("/:id", authRequired, requireRol("Admin"), eliminarTarea);
 export default router;

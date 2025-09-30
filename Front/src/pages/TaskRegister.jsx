@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { createTask, listTasks } from '../services/api.js'
+import { useAuth } from '../context/AuthContext.jsx'   
 
 export default function TaskRegister(){
+  const { user,loading } = useAuth()   
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [dueDate, setDueDate] = useState('')
@@ -54,7 +56,7 @@ export default function TaskRegister(){
         attachments: files.map(f => ({ name:f.name, type:f.type, size:f.size }))
       }
       const saved = await createTask(payload)
-      setSuccess('Tarea enviada para revisión')
+      setSuccess('Tarea creada con éxito')
       setTasks(prev => [saved, ...prev])
 
       // reset
@@ -66,59 +68,46 @@ export default function TaskRegister(){
     }
   }
 
+
+if (loading) {
+  return <p>⏳ Cargando...</p>
+}
+    
   return (
     <div className="container" style={{padding:0}}>
-      <div className="card" style={{marginBottom:16}}>
-        <h3 style={{marginBottom:8}}>Registrar Tarea</h3>
-        <form onSubmit={onSubmit}>
-          <label>Título *</label>
-          <input value={title} onChange={e=>setTitle(e.target.value)} placeholder="Ej: Capacitación de seguridad" />
-          <label>Descripción *</label>
-          <input value={description} onChange={e=>setDescription(e.target.value)} placeholder="Describe lo realizado…" />
+      
+    
+      {user?.rol === "Admin" && (
+        <div className="card" style={{marginBottom:16}}>
+          <h3 style={{marginBottom:8}}>Registrar Tarea</h3>
+          <form onSubmit={onSubmit}>
+            <label>Título *</label>
+            <input value={title} onChange={e=>setTitle(e.target.value)} placeholder="Ej: Capacitación de seguridad" />
+            <label>Descripción *</label>
+            <input value={description} onChange={e=>setDescription(e.target.value)} placeholder="Describe lo realizado…" />
 
-          <div className="row">
-            <div style={{flex:1}}>
-              <label>Fecha límite</label>
-              <input type="date" value={dueDate} onChange={e=>setDueDate(e.target.value)} />
+            <div className="row">
+              <div style={{flex:1}}>
+                <label>Fecha límite</label>
+                <input type="date" value={dueDate} onChange={e=>setDueDate(e.target.value)} />
+              </div>
+              <div style={{width:220}}>
+                <label>Puntos</label>
+                <input type="number" min="0" value={points} onChange={e=>setPoints(e.target.value)} />
+              </div>
             </div>
-            <div style={{width:220}}>
-              <label>Puntos</label>
-              <input type="number" min="0" value={points} onChange={e=>setPoints(e.target.value)} />
-            </div>
-          </div>
 
-          <label>Evidencias (PDF/JPG/PNG/TXT, máx 5 MB c/u)</label>
-          <input type="file" multiple onChange={onPickFiles} />
+            <button className="btn" style={{marginTop:12}} disabled={saving}>
+              {saving ? 'Creando…' : 'Crear tarea'}
+            </button>
+          </form>
+        </div>
+      )}
 
-          {!!files.length && (
-            <div className="list" style={{marginTop:10}}>
-              {files.map((f,i)=>(
-                <div key={i} className="listItem">
-                  <span>{f.name}</span>
-                  <span style={{opacity:.7, fontSize:12}}>{(f.size/1024/1024).toFixed(2)} MB</span>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {saving || progress>0 ? (
-            <div className="progressBar" style={{marginTop:12}}>
-              <div className="progressInner" style={{width: `${progress}%`}} />
-            </div>
-          ) : null}
-
-          {error && <div className="error">{error}</div>}
-          {success && <div className="success">{success}</div>}
-
-          <button className="btn" style={{marginTop:12}} disabled={saving}>
-            {saving ? 'Enviando…' : 'Enviar para revisión'}
-          </button>
-        </form>
-      </div>
-
+      {/* 👀 Todos ven la lista de tareas */}
       <div className="card">
-        <h3>Tus envíos recientes</h3>
-        {!tasks.length && <div style={{opacity:.7}}>Aún no has registrado tareas.</div>}
+        <h3>Tareas disponibles</h3>
+        {!tasks.length && <div style={{opacity:.7}}>Aún no hay tareas disponibles.</div>}
         {tasks.map(t=>(
           <div key={t.id} className="listItem">
             <div>
@@ -137,3 +126,4 @@ export default function TaskRegister(){
     </div>
   )
 }
+

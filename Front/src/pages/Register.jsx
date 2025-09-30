@@ -8,9 +8,13 @@ export default function Register(){
   const [email,setEmail] = useState('')
   const [password,setPassword] = useState('')
   const [confirm,setConfirm] = useState('')
+  const [rol,setRol] = useState('Trabajador')
   const [loading,setLoading] = useState(false)
   const [error,setError] = useState('')
   const navigate = useNavigate()
+
+
+  
 
   async function onSubmit(e){
     e.preventDefault()
@@ -20,13 +24,22 @@ export default function Register(){
     if(password !== confirm){ setError('Las contraseñas no coinciden'); return }
     try{
       setLoading(true)
-      await register({ name, email, password })
+      await register({ name, email, password, rol })
       navigate('/app/dashboard', { replace:true })
     }catch(err){
       setError(err.message || 'Error al crear usuario')
     }finally{
       setLoading(false)
     }
+
+    const u = await register({ name, email, password, rol })
+    if (u.rol === "Admin") {
+      navigate("/app/dashboard")
+    } else {
+      navigate("/app/dashboard")
+    }
+    
+
   }
 
 return (
@@ -45,6 +58,11 @@ return (
           <input type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Mínimo 6 caracteres" />
           <label>Confirmar contraseña</label>
           <input type="password" value={confirm} onChange={e=>setConfirm(e.target.value)} placeholder="Repite la contraseña" />
+          <label>Rol</label>
+          <select value={rol} onChange={e=>setRol(e.target.value)} className="auth-input">
+            <option value="Trabajador">Trabajador</option>
+            <option value="Admin">Admin</option>
+          </select>
           {error && <div className="error">{error}</div>}
           <button className="btn auth-btn" disabled={loading}>{loading?'Creando...':'Crear cuenta'}</button>
           <div className="row" style={{marginTop:10, justifyContent:'center'}}>

@@ -1,11 +1,14 @@
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === '1'
+console.log("📡 BASE_URL =", BASE_URL, "USE_MOCK =", USE_MOCK)
 
 async function http(path, { method = 'GET', data, token } = {}) {
   if (USE_MOCK) return mockHttp(path, { method, data, token })
 
   const headers = { 'Content-Type': 'application/json' }
   if (token) headers['Authorization'] = `Bearer ${token}`
+
+
   const res = await fetch(BASE_URL + path, {
     method,
     headers,
@@ -36,9 +39,11 @@ const mockDBKey = 'trp_mock_users'
 const mockTasksKey = 'trp_mock_tasks'
 
 export async function createTask(payload){
-  return http('/api/tasks', { method: 'POST', data: payload })
+  const token = localStorage.getItem("token")
+  return http('/api/tasks', { method: 'POST', data: payload,token })
 }
 export async function listTasks(){
+  const token = localStorage.getItem("token")
   return http('/api/tasks', { method: 'GET' })
 }
 

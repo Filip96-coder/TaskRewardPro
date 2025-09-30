@@ -3,21 +3,28 @@ import Tarea from "../models/tarea.js";
 
 export const crearTarea = async (req, res) => {
   try {
-    const tarea = new Tarea(req.body);
-    const tareaGuardada = await tarea.save();
+    const nuevaTarea = new Tarea({
+      title: req.body.title,
+      description: req.body.description,
+      dueDate: req.body.dueDate,
+      points: req.body.points,
+      attachments: req.body.attachments || [],
+      createdBy: req.user?.id || null
+    });
+    const tareaGuardada = await nuevaTarea.save();
     res.status(201).json(tareaGuardada);
   } catch (error) {
-    res.status(500).json({ msg: "Error al crear tarea", error });
+    console.error("❌ Error al crear tarea:", error);
+    res.status(500).json({ msg: "Error al crear tarea", error: error.message });
   }
 };
 
-
 export const obtenerTareas = async (req, res) => {
   try {
-    const tareas = await Tarea.find();
+    const tareas = await Tarea.find().sort({ createdAt: -1 });
     res.json(tareas);
   } catch (error) {
-    res.status(500).json({ msg: "Error al obtener tareas", error });
+    res.status(500).json({ msg: "Error al obtener tareas", error: error.message });
   }
 };
 

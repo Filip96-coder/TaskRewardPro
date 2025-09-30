@@ -8,9 +8,10 @@ import recompensaRoutes from "./routes/recompensaRoutes.js";
 import metaRoutes from "./routes/metaRoutes.js";
 import rankingRoutes from "./routes/rankingRoutes.js";
 import tareaRoutes from "./routes/tareaRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 
 dotenv.config();
-connectDB();
+await connectDB();
 
 const app = express();
 app.use(cors());
@@ -23,6 +24,11 @@ app.use("/api/recompensas", recompensaRoutes);
 app.use("/api/metas", metaRoutes);
 app.use("/api/rankings", rankingRoutes);
 app.use("/api/tareas", tareaRoutes);
+app.use("/api/tasks", tareaRoutes);
+app.use("/api/auth", authRoutes);
+
+app.get("/health", (req,res) => res.json ({ok: true}));
+
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);

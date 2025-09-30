@@ -56,6 +56,26 @@ input:focus{box-shadow:0 0 0 6px var(--ring);border-color:var(--primary)}
 .header .title{font-weight:600}
 .main{padding:20px}
 
+.auth-input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: rgba(13,18,35,.9);
+  color:#707275;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.auth-input:focus {
+  border-color: var(--primary, #0b1020);
+  outline: none;
+  box-shadow: 0 0 4px rgba(255,255,255,.08);
+}
+
+
 /* dashboard bits */
 .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
 .stat{grid-column:span 3;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px}
