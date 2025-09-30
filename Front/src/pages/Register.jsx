@@ -47,7 +47,7 @@ return (
           <label>Confirmar contraseña</label>
           <input type="password" value={confirm} onChange={e=>setConfirm(e.target.value)} placeholder="Repite la contraseña" />
           <label>Rol</label>
-          <select value={rol} onChange={e=>setRol(e.target.value)}>
+          <select value={rol} onChange={e=>setRol(e.target.value)} className="auth-input">
             <option value="Trabajador">Trabajador</option>
             <option value="Admin">Admin</option>
           </select>
