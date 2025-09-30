@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import Usuario from "../models/usuario.js";
 
 function sign(u) {
-  return jwt.sign({ id: u._id, email: u.email }, process.env.JWT_SECRET, { expiresIn: "7d" });
+  return jwt.sign({ id: u._id, email: u.email,rol:u.rol }, process.env.JWT_SECRET, { expiresIn: "7d" });
 }
 
 export async function register(req, res) {

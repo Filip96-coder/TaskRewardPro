@@ -7,6 +7,8 @@ async function http(path, { method = 'GET', data, token } = {}) {
 
   const headers = { 'Content-Type': 'application/json' }
   if (token) headers['Authorization'] = `Bearer ${token}`
+
+
   const res = await fetch(BASE_URL + path, {
     method,
     headers,
@@ -37,9 +39,11 @@ const mockDBKey = 'trp_mock_users'
 const mockTasksKey = 'trp_mock_tasks'
 
 export async function createTask(payload){
-  return http('/api/tasks', { method: 'POST', data: payload })
+  const token = localStorage.getItem("token")
+  return http('/api/tasks', { method: 'POST', data: payload,token })
 }
 export async function listTasks(){
+  const token = localStorage.getItem("token")
   return http('/api/tasks', { method: 'GET' })
 }
 

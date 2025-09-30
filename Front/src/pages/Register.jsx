@@ -13,6 +13,9 @@ export default function Register(){
   const [error,setError] = useState('')
   const navigate = useNavigate()
 
+
+  
+
   async function onSubmit(e){
     e.preventDefault()
     setError('')
@@ -28,6 +31,15 @@ export default function Register(){
     }finally{
       setLoading(false)
     }
+
+    const u = await register({ name, email, password, rol })
+    if (u.rol === "Admin") {
+      navigate("/app/dashboard")
+    } else {
+      navigate("/app/dashboard")
+    }
+    
+
   }
 
 return (
