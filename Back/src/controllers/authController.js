@@ -10,17 +10,19 @@ export async function register(req, res) {
   try {
     console.log("📩 Body recibido:", req.body); // 👈 ver qué llega del front
 
-    const { name = "", email, password } = req.body;
-    if (!email || !password) return res.status(400).json({ message: "Email y password son requeridos" });
+    const { name = "", email, password,rol } = req.body;
+    if (!email || !password || !rol) return res.status(400).json({ message: "Email y password y rol son requeridos" });
 
     const exists = await Usuario.findOne({ email });
     if (exists) return res.status(409).json({ message: "El email ya está registrado" });
 
     const hash = await bcrypt.hash(password, 10);
-    const user = await Usuario.create({ name, email, password: hash, points: 850 });
+    const user = await Usuario.create({ name, email, password: hash,rol, points: 0 });
 
     const token = sign(user);
-    const safe = { id: user._id, name: user.name, email: user.email, role: user.role, points: user.points };
+
+
+    const safe = { id: user._id, name: user.name, email: user.email, rol: user.rol, points: user.points };
     res.status(201).json({ token, user: safe });
   } catch (e) {
     console.error("❌ Error en register:", e);
