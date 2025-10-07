@@ -35,6 +35,12 @@ export default function TaskRegister(){
     if(!title || !description){ setError('Título y descripción son obligatorios'); return }
     if(points < 0){ setError('Los puntos no pueden ser negativos'); return }
 
+    const date = dueDate ? new Date(dueDate) : null
+    if (date) {
+    date.setDate(date.getDate() + 1)
+    }
+
+
     try{
       setSaving(true)
       // Simula upload
@@ -51,7 +57,7 @@ export default function TaskRegister(){
       const payload = {
         title,
         description,
-        dueDate: dueDate || null,
+        dueDate: date,
         points: Number(points),
         attachments: files.map(f => ({ name:f.name, type:f.type, size:f.size }))
       }
@@ -104,7 +110,7 @@ if (loading) {
         </div>
       )}
 
-      {/* 👀 Todos ven la lista de tareas */}
+      {/* Todos ven la lista de tareas */}
       <div className="card">
         <h3>Tareas disponibles</h3>
         {!tasks.length && <div style={{opacity:.7}}>Aún no hay tareas disponibles.</div>}
@@ -113,7 +119,12 @@ if (loading) {
             <div>
               <div style={{fontWeight:600}}>{t.title}</div>
               <div style={{opacity:.7, fontSize:12}}>
-                {t.dueDate ? `Vence: ${t.dueDate}` : 'Sin fecha límite'} · {t.attachments?.length || 0} adjuntos
+                {t.dueDate ? `Vence: ${new Date(t.dueDate).toLocaleDateString('es-CO', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })}`
+  : 'Sin fecha límite'} · {t.attachments?.length || 0} adjuntos
               </div>
             </div>
             <div style={{display:'grid', justifyItems:'end'}}>
