@@ -91,6 +91,37 @@ input:focus{box-shadow:0 0 0 6px var(--ring);border-color:var(--primary)}
 .progressBar{height:10px;background:#0f1426;border:1px solid var(--border);border-radius:999px;overflow:hidden}
 .progressInner{height:100%;background:var(--success);width:60%}
 
+.btn-action {
+  border: none;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s ease;
+}
+
+.update-btn {
+  background-color: #00C896;      /* mismo verde del modal */
+  color: #ffffff;
+}
+
+.update-btn:hover {
+  background-color: #02a97c;
+  transform: scale(1.03);
+}
+
+.delete-btn {
+  background-color: #E53E3E;      /* rojo del modal */
+  color: #ffffff;
+}
+
+.delete-btn:hover {
+  background-color: #c53030;
+  transform: scale(1.03);
+}
+
+
 .badge{
   display:inline-block;
   padding:4px 8px;
