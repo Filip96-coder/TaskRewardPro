@@ -31,8 +31,9 @@ export const obtenerTareas = async (req, res) => {
 
 export const actualizarTarea = async (req, res) => {
   try {
-    const tarea = await Tarea.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(tarea);
+    const tareaActualizada = await Tarea.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!tareaActualizada) return res.status(404).json({ msg: "Tarea no encontrada" })
+    res.json(tareaActualizada);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -41,7 +42,8 @@ export const actualizarTarea = async (req, res) => {
 
 export const eliminarTarea = async (req, res) => {
   try {
-    await Tarea.findByIdAndDelete(req.params.id);
+    const tareaEliminada= await Tarea.findByIdAndDelete(req.params.id);
+    if (!tareaEliminada) return res.status(404).json({ msg: "Tarea no encontrada" })
     res.json({ message: "Tarea eliminada correctamente" });
   } catch (error) {
     res.status(500).json({ error: error.message });

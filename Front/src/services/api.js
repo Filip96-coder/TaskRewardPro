@@ -1,9 +1,7 @@
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
-const USE_MOCK = import.meta.env.VITE_USE_MOCK === '1'
-console.log("📡 BASE_URL =", BASE_URL, "USE_MOCK =", USE_MOCK)
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000'
+console.log("BASE_URL =", BASE_URL)
 
 async function http(path, { method = 'GET', data, token } = {}) {
-  if (USE_MOCK) return mockHttp(path, { method, data, token })
 
   const headers = { 'Content-Type': 'application/json' }
   if (token) headers['Authorization'] = `Bearer ${token}`
@@ -26,73 +24,31 @@ async function http(path, { method = 'GET', data, token } = {}) {
 export async function login(email, password) {
   return http('/api/auth/login', { method: 'POST', data: { email, password } })
 }
+
 export async function register(payload) {
   return http('/api/auth/register', { method: 'POST', data: payload })
 }
+
 export async function getProfile(token) {
   return http('/api/auth/me', { method: 'GET', token })
 }
 
-// MOCK mode (sin backend) //
-function delay(ms){ return new Promise(r=>setTimeout(r, ms)) }
-const mockDBKey = 'trp_mock_users'
-const mockTasksKey = 'trp_mock_tasks'
-
-export async function createTask(payload){
+export async function createTask(payload) {
   const token = localStorage.getItem("token")
-  return http('/api/tasks', { method: 'POST', data: payload,token })
-}
-export async function listTasks(){
-  const token = localStorage.getItem("token")
-  return http('/api/tasks', { method: 'GET' })
+  return http("/api/tasks", { method: "POST", data: payload, token })
 }
 
-async function mockHttp(path, { method, data, token }){
-  await delay(400)
-  const db = JSON.parse(localStorage.getItem(mockDBKey) || '[]')
+export async function listTasks() {
+  const token = localStorage.getItem("token")
+  return http("/api/tasks", { method: "GET", token })
+}
 
-  if (path === '/api/auth/register' && method === 'POST') {
-    const exists = db.find(u => u.email === data.email)
-    if (exists) throw new Error('El email ya está registrado')
-    const user = { id: crypto.randomUUID(), name: data.name || '', email: data.email, points: 850 }
-    db.push({ ...user, password: data.password })
-    localStorage.setItem(mockDBKey, JSON.stringify(db))
-    return { token: 'mock.' + user.id, user }
-  }
+export async function updateTask(id, data) {
+  const token = localStorage.getItem("token")
+  return http(`/api/tasks/${id}`, { method: "PUT", data, token })
+}
 
-  if (path === '/api/auth/login' && method === 'POST') {
-    const user = db.find(u => u.email === data.email && u.password === data.password)
-    if (!user) throw new Error('Credenciales inválidas')
-    const { password, ...safe } = user
-    return { token: 'mock.' + user.id, user: safe }
-  }
-
-  if (path === '/api/auth/me' && method === 'GET') {
-    if (!token?.startsWith('mock.')) throw new Error('Token inválido')
-    const id = token.split('.')[1]
-    const user = db.find(u => u.id === id)
-    if (!user) throw new Error('Usuario no encontrado')
-    const { password, ...safe } = user
-    return safe
-  }
-
-  if (path === '/api/tasks' && method === 'POST') {
-    const tasks = JSON.parse(localStorage.getItem(mockTasksKey) || '[]')
-    const task = {
-      id: crypto.randomUUID(),
-      ...data,
-      createdAt: new Date().toISOString(),
-      status: 'ENVIADA' // Flujo: BORRADOR | ENVIADA | APROBADA | RECHAZADA
-    }
-    tasks.unshift(task)
-    localStorage.setItem(mockTasksKey, JSON.stringify(tasks))
-    return task
-  }
-
-  if (path === '/api/tasks' && method === 'GET') {
-    const tasks = JSON.parse(localStorage.getItem(mockTasksKey) || '[]')
-    return tasks
-  }
-
-  throw new Error('Ruta mock no implementada: ' + path)
+export async function deleteTask(id) {
+  const token = localStorage.getItem("token")
+  return http(`/api/tasks/${id}`, { method: "DELETE", token })
 }
