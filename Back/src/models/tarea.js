@@ -6,7 +6,7 @@ const tareaSchema = new mongoose.Schema({
   dueDate: { type: Date },                             
   points: { type: Number, default: 0 },
   attachments: [{ name: String, type: String, size: Number }],
-  status: { type: String, enum: ["Pendiente", "Completada"], default: "Pendiente" },
+  status: {type: String,enum: ["Pendiente", "Completada", "Rechazada"],default: "Pendiente",},
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "Usuario" }
 },{timestamps:true
 
