@@ -2,6 +2,7 @@ import Swal from 'sweetalert2'
 import React, { useEffect, useState } from 'react'
 import { createTask, listTasks, deleteTask, updateTask } from '../services/api.js'
 import { useAuth } from '../context/AuthContext.jsx'
+import { submitTaskFile } from "../services/api.js"
 
 export default function TaskRegister() {
   const { user, loading } = useAuth()
@@ -23,13 +24,6 @@ export default function TaskRegister() {
       setTasks(t)
     })()
   }, [])
-
-  function onPickFiles(e) {
-    const list = Array.from(e.target.files || [])
-    const allowed = ['application/pdf', 'image/png', 'image/jpeg', 'text/plain']
-    const cleaned = list.filter(f => allowed.includes(f.type) && f.size <= 5 * 1024 * 1024)
-    setFiles(cleaned)
-  }
 
   async function onSubmit(e) {
     e.preventDefault()
@@ -84,7 +78,7 @@ export default function TaskRegister() {
       `,
       focusConfirm: false,
       showCancelButton: true,
-      confirmButtonText: "💾 Guardar cambios",
+      confirmButtonText: "Guardar cambios",
       cancelButtonText: "Cancelar",
       background: "#1E1E2F",
       color: "#FFFFFF",
@@ -104,7 +98,7 @@ export default function TaskRegister() {
     if (!formValues) return
   
     try {
-      // 🔄 Enviar actualización al backend
+     
       const updated = await updateTask(tarea._id, {
         title: formValues.title,
         description: formValues.description,
@@ -112,7 +106,7 @@ export default function TaskRegister() {
         dueDate: tarea.dueDate
       })
   
-      // 🧩 Actualizar lista local
+      
       setTasks(prev =>
         prev.map(t => (t._id === updated._id ? updated : t))
       )
@@ -180,6 +174,29 @@ export default function TaskRegister() {
       }
     }
   }
+
+  async function handleFileSubmit(taskId, file) {
+    try {
+      await submitTaskFile(taskId, file)
+      await Swal.fire({
+        icon: "success",
+        title: "Entrega enviada",
+        text: "Tu evidencia fue subida correctamente y está pendiente de revisión.",
+        background: "#1E1E2F",
+        color: "#00C896",
+        confirmButtonColor: "#00C896",
+      })
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Error al subir archivo",
+        text: err.message || "No se pudo subir la evidencia.",
+        background: "#1E1E2F",
+        color: "#FFFFFF",
+        confirmButtonColor: "#E53E3E",
+      })
+    }
+  }
   
 
 
@@ -220,7 +237,7 @@ export default function TaskRegister() {
         </div>
       )}
 
-      {/* Todos ven la lista de tareas */}
+      
       <div className="card">
         <h3>Tareas disponibles</h3>
         {!tasks.length && <div style={{ opacity: .7 }}>Aún no hay tareas disponibles.</div>}
@@ -240,6 +257,42 @@ export default function TaskRegister() {
             <div style={{display:'grid', justifyItems:'end'}}>
   <span style={{opacity:.8}}>{t.points} pts</span>
   <span style={{fontSize:12, opacity:.7}}>Estado: {t.status}</span>
+
+  {user?.rol === "Trabajador" && (
+  <div style={{ marginTop: 8 }}>
+
+    <input
+      type="file"
+      id={`file_${t._id}`}
+      style={{ display: "none" }}
+      accept=".pdf,.png,.jpg,.jpeg,.txt"
+      onChange={async (e) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+        console.log("📤 Archivo seleccionado:", file.name) 
+        await handleFileSubmit(t._id, file)
+        e.target.value = "" 
+      }}
+    />
+
+    
+     {/* El label actúa como botón */}
+     <label
+      htmlFor={`file_${t._id}`}
+      className="btn-action update-btn"
+      style={{
+        display: "inline-block",
+        cursor: "pointer",
+        padding: "6px 14px",
+        borderRadius: "8px",
+        fontWeight: 600,
+      }}
+    >
+      Subir entrega
+    </label>
+  </div>
+)}
+
 
   {user?.rol === "Admin" && (
      <div style={{ display: "flex", gap: 10, marginTop: 8 }}>

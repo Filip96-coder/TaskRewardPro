@@ -1,22 +1,29 @@
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 console.log("BASE_URL =", BASE_URL)
 
-async function http(path, { method = 'GET', data, token } = {}) {
+async function http(path, { method = "GET", data, token } = {}) {
+  const headers = {}
 
-  const headers = { 'Content-Type': 'application/json' }
-  if (token) headers['Authorization'] = `Bearer ${token}`
-
+  if (!(data instanceof FormData)) headers["Content-Type"] = "application/json"
+  if (token) headers["Authorization"] = `Bearer ${token}`
 
   const res = await fetch(BASE_URL + path, {
     method,
     headers,
-    body: data ? JSON.stringify(data) : undefined
+    body: data
+      ? (data instanceof FormData ? data : JSON.stringify(data))
+      : undefined
   })
+
   if (!res.ok) {
-    let msg = 'Error en la solicitud'
-    try { const j = await res.json(); msg = j.message || msg } catch {}
+    let msg = "Error en la solicitud"
+    try {
+      const j = await res.json()
+      msg = j.message || msg
+    } catch {}
     throw new Error(msg)
   }
+
   return res.json()
 }
 
@@ -52,3 +59,27 @@ export async function deleteTask(id) {
   const token = localStorage.getItem("token")
   return http(`/api/tasks/${id}`, { method: "DELETE", token })
 }
+
+export async function submitTaskFile(taskId, file) {
+  const token = localStorage.getItem("token")
+  const fd = new FormData()
+  fd.append("file", file)
+  return http(`/api/tasks/${taskId}/submit`, { method: "POST", data: fd, token })
+}
+
+
+export async function listTaskSubmissions(taskId) {
+  const token = localStorage.getItem("token")
+  return http(`/api/tasks/${taskId}/submissions`, { method: "GET", token })
+}
+
+
+export async function decideSubmission(taskId, subId, action, feedback = "") {
+  const token = localStorage.getItem("token")
+  return http(`/api/tasks/${taskId}/submissions/${subId}/decision`, {
+    method: "PATCH",
+    data: { action, feedback },
+    token
+  })
+}
+
