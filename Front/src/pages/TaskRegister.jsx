@@ -1,8 +1,11 @@
 import Swal from 'sweetalert2'
 import React, { useEffect, useState } from 'react'
-import { createTask, listTasks, deleteTask, updateTask } from '../services/api.js'
+import { createTask, listTasks, deleteTask, updateTask,listUserTasks } from '../services/api.js'
 import { useAuth } from '../context/AuthContext.jsx'
-import { submitTaskFile } from "../services/api.js"
+import { submitTaskFile, claimPoints } from "../services/api.js"
+import { listTaskSubmissions, decideSubmission,API_BASE } from "../services/api.js"
+
+
 
 export default function TaskRegister() {
   const { user, loading } = useAuth()
@@ -18,12 +21,53 @@ export default function TaskRegister() {
   const [tasks, setTasks] = useState([])
   const [editing, setEditing] = useState(null)
 
+  async function refreshSubmissions() {
+    try {
+      let tasksFromServer = []
+  
+      
+      if (user?.rol === "Admin") {
+        tasksFromServer = (await listTasks().catch(() => []))
+          .filter(t => t.status !== "Completada" && t.status !== "Rechazada")
+      }
+  
+      
+      else if (user?.rol === "Trabajador") {
+        tasksFromServer = await listUserTasks().catch(() => [])
+      }
+  
+      
+      const withSubmissions = await Promise.all(
+        tasksFromServer.map(async (task) => {
+          try {
+            const token = localStorage.getItem("token")
+            const res = await fetch(`${API_BASE}/api/tasks/${task._id}/submission`, {
+              headers: { Authorization: `Bearer ${token}` },
+            })
+            if (res.ok) {
+              const mySubmission = await res.json()
+              return { ...task, mySubmission }
+            }
+          } catch (err) {
+            console.error("❌ Error obteniendo entrega:", err)
+          }
+          return { ...task }
+        })
+      )
+  
+      setTasks(withSubmissions)
+    } catch (err) {
+      console.error("❌ Error al refrescar tareas:", err)
+    }
+  }
+  
+
   useEffect(() => {
-    (async () => {
-      const t = await listTasks().catch(() => [])
-      setTasks(t)
-    })()
-  }, [])
+    if (!user) return
+    refreshSubmissions()
+  }, [user])
+
+  
 
   async function onSubmit(e) {
     e.preventDefault()
@@ -94,23 +138,23 @@ export default function TaskRegister() {
         return { title, description, points }
       }
     })
-  
+
     if (!formValues) return
-  
+
     try {
-     
+
       const updated = await updateTask(tarea._id, {
         title: formValues.title,
         description: formValues.description,
         points: formValues.points,
         dueDate: tarea.dueDate
       })
-  
-      
+
+
       setTasks(prev =>
         prev.map(t => (t._id === updated._id ? updated : t))
       )
-  
+
       Swal.fire({
         icon: "success",
         title: "Tarea actualizada",
@@ -130,8 +174,8 @@ export default function TaskRegister() {
       })
     }
   }
-  
-  
+
+
 
   async function onDelete(id) {
     const result = await Swal.fire({
@@ -141,18 +185,18 @@ export default function TaskRegister() {
       showCancelButton: true,
       confirmButtonText: "Sí, eliminar",
       cancelButtonText: "Cancelar",
-      background: "#1E1E2F",         
-      color: "#FFFFFF",              
-      confirmButtonColor: "#E53E3E", 
-      cancelButtonColor: "#00C896",  
+      background: "#1E1E2F",
+      color: "#FFFFFF",
+      confirmButtonColor: "#E53E3E",
+      cancelButtonColor: "#00C896",
     })
-  
- 
+
+
     if (result.isConfirmed) {
       try {
         await deleteTask(id)
         setTasks(prev => prev.filter(t => t._id !== id))
-  
+
         await Swal.fire({
           icon: "success",
           title: "Tarea eliminada",
@@ -178,6 +222,7 @@ export default function TaskRegister() {
   async function handleFileSubmit(taskId, file) {
     try {
       await submitTaskFile(taskId, file)
+  
       await Swal.fire({
         icon: "success",
         title: "Entrega enviada",
@@ -186,6 +231,19 @@ export default function TaskRegister() {
         color: "#00C896",
         confirmButtonColor: "#00C896",
       })
+  
+      // ✅ Actualiza el estado local sin recargar
+      setTasks(prevTasks =>
+        prevTasks.map(t =>
+          t._id === taskId
+            ? { ...t, mySubmission: { status: "Pendiente" } }
+            : t
+        )
+      )
+  
+      // (opcional, para sincronizar con DB)
+      await refreshSubmissions()
+  
     } catch (err) {
       Swal.fire({
         icon: "error",
@@ -198,6 +256,134 @@ export default function TaskRegister() {
     }
   }
   
+
+  async function handleViewSubmissions(taskId) {
+    try {
+      const submissions = await listTaskSubmissions(taskId)
+  
+      if (!submissions.length) {
+        await Swal.fire({
+          icon: "info",
+          title: "Sin entregas",
+          text: "Aún no hay entregas para esta tarea.",
+          background: "#1E1E2F",
+          color: "#FFFFFF",
+          confirmButtonColor: "#00C896",
+        })
+        return
+      }
+  
+      // construir HTML del listado
+      const htmlList = submissions.map((s) => `
+  <div style="margin-bottom:10px; text-align:left;">
+    <strong>${s.user?.name || s.user?.nombre || "Usuario"}</strong> 
+    <br/>Archivo: <a href="${API_BASE}${s.filePath}" target="_blank" style="color:#00C896">Ver evidencia</a>
+    <br/>Estado: <b>${s.status}</b>
+    <br/>
+    <button id="approve_${s._id}" style="background:#00C896;color:#fff;padding:4px 10px;border:none;border-radius:6px;cursor:pointer;margin-top:6px;">Aprobar</button>
+    <button id="reject_${s._id}" style="background:#E53E3E;color:#fff;padding:4px 10px;border:none;border-radius:6px;cursor:pointer;margin-top:6px;margin-left:4px;">Rechazar</button>
+  </div>
+`).join("")
+  
+      const modal = await Swal.fire({
+        title: "Entregas de la tarea",
+        html: htmlList,
+        width: 600,
+        background: "#1E1E2F",
+        color: "#FFFFFF",
+        showConfirmButton: false,
+        didOpen: () => {
+          submissions.forEach((s) => {
+            document.getElementById(`approve_${s._id}`).onclick = async () => {
+              await handleDecision(taskId, s._id, "approve")
+            }
+            document.getElementById(`reject_${s._id}`).onclick = async () => {
+              await handleDecision(taskId, s._id, "reject")
+            }
+          })
+        }
+      })
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Error al cargar entregas",
+        text: err.message || "No se pudieron obtener las entregas",
+        background: "#1E1E2F",
+        color: "#FFFFFF",
+        confirmButtonColor: "#E53E3E",
+      })
+    }
+  }
+
+  async function handleDecision(taskId, subId, action) {
+    const confirm = await Swal.fire({
+      title: action === "approve" ? "¿Aprobar entrega?" : "¿Rechazar entrega?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: action === "approve" ? "Aprobar" : "Rechazar",
+      cancelButtonText: "Cancelar",
+      background: "#1E1E2F",
+      color: "#FFFFFF",
+      confirmButtonColor: action === "approve" ? "#00C896" : "#E53E3E",
+      cancelButtonColor: "#444",
+    })
+    if (!confirm.isConfirmed) return
+  
+    try {
+      await decideSubmission(taskId, subId, action)
+  
+      
+      setTasks(prevTasks => prevTasks.filter(t => t._id !== taskId))
+  
+      await Swal.fire({
+        icon: "success",
+        title: action === "approve" ? "Entrega aprobada" : "Entrega rechazada",
+        background: "#1E1E2F",
+        color: "#00C896",
+        confirmButtonColor: "#00C896",
+      })
+  
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: err.message || "No se pudo procesar la acción.",
+        background: "#1E1E2F",
+        color: "#FFFFFF",
+        confirmButtonColor: "#E53E3E",
+      })
+    }
+    await refreshSubmissions()
+  }
+  
+
+  async function handleClaimPoints(taskId) {
+    try {
+      await claimPoints(taskId)
+      await refreshSubmissions()
+      Swal.fire({
+        icon: "success",
+        title: "Puntos reclamados",
+        text: "Los puntos han sido añadidos a tu cuenta.",
+        background: "#1E1E2F",
+        color: "#00C896",
+        confirmButtonColor: "#00C896",
+      })
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: err.message || "No se pudieron reclamar los puntos.",
+        background: "#1E1E2F",
+        color: "#FFFFFF",
+        confirmButtonColor: "#E53E3E",
+      })
+    }
+  }
+  
+  
+  
+
 
 
   if (loading) {
@@ -237,12 +423,12 @@ export default function TaskRegister() {
         </div>
       )}
 
-      
+
       <div className="card">
         <h3>Tareas disponibles</h3>
         {!tasks.length && <div style={{ opacity: .7 }}>Aún no hay tareas disponibles.</div>}
         {tasks.map(t => (
-          <div key={t.id} className="listItem">
+          <div key={t._id} className="listItem">
             <div>
               <div style={{ fontWeight: 600 }}>{t.title}</div>
               <div style={{ opacity: .7, fontSize: 12 }}>
@@ -254,58 +440,115 @@ export default function TaskRegister() {
                   : 'Sin fecha límite'} · {t.attachments?.length || 0} adjuntos
               </div>
             </div>
-            <div style={{display:'grid', justifyItems:'end'}}>
-  <span style={{opacity:.8}}>{t.points} pts</span>
-  <span style={{fontSize:12, opacity:.7}}>Estado: {t.status}</span>
+            <div style={{ display: 'grid', justifyItems: 'end' }}>
+              <span style={{ opacity: .8 }}>{t.points} pts</span>
+              <span style={{ fontSize: 12, opacity: .7 }}>Estado: {t.status}</span>
 
-  {user?.rol === "Trabajador" && (
+{user?.rol === "Trabajador" && (
   <div style={{ marginTop: 8 }}>
+    {t.mySubmission ? (
+      <>
+        {t.mySubmission.status === "Pendiente" && (
+          <span style={{ color: "#FFD700" }}>⏳ Pendiente de revisión</span>
+        )}
+        {t.mySubmission.status === "Aprobada" && (
+          <div>
+            <span style={{ color: "#00C896" }}>🟢 Aprobada</span>
+            {!t.mySubmission.claimed && (
+              <button
+                onClick={() => handleClaimPoints(t._id)}
+                className="btn-action update-btn"
+                style={{ marginLeft: 10 }}
+              >
+                Reclamar puntos
+              </button>
+            )}
+            {t.mySubmission.claimed && (
+              <span style={{ marginLeft: 10, color: "#00C896" }}>
+                ✅ Puntos reclamados
+              </span>
+            )}
+          </div>
+        )}
+        {t.mySubmission.status === "Rechazada" && (
+          <div>
+            <span style={{ color: "#E53E3E" }}>🔴 Rechazada</span>
+            <label
+  htmlFor={`retry_${t._id}`}
+  className="btn-action delete-btn"
+  style={{
+    marginLeft: 10,
+    display: "inline-block",
+    cursor: "pointer",
+    padding: "6px 12px",
+    borderRadius: "8px",
+    fontWeight: 600,
+  }}
+>
+  Reintentar
+</label>
 
-    <input
-      type="file"
-      id={`file_${t._id}`}
-      style={{ display: "none" }}
-      accept=".pdf,.png,.jpg,.jpeg,.txt"
-      onChange={async (e) => {
-        const file = e.target.files?.[0]
-        if (!file) return
-        console.log("📤 Archivo seleccionado:", file.name) 
-        await handleFileSubmit(t._id, file)
-        e.target.value = "" 
-      }}
-    />
+<input
+  type="file"
+  id={`retry_${t._id}`}
+  style={{ display: "none" }}
+  accept=".pdf,.png,.jpg,.jpeg,.txt"
+  onChange={async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    await handleFileSubmit(t._id, file)
+    e.target.value = ""
+  }}
+/>
 
-    
-     {/* El label actúa como botón */}
-     <label
-      htmlFor={`file_${t._id}`}
-      className="btn-action update-btn"
-      style={{
-        display: "inline-block",
-        cursor: "pointer",
-        padding: "6px 14px",
-        borderRadius: "8px",
-        fontWeight: 600,
-      }}
-    >
-      Subir entrega
-    </label>
+          </div>
+        )}
+      </>
+    ) : (
+      
+      <>
+        <input
+          style={{ display: "none" }}
+          type="file"
+          id={`file_${t._id}`}
+          onChange={async (e) => {
+            const file = e.target.files?.[0]
+            if (!file) return
+            await handleFileSubmit(t._id, file)
+            e.target.value = ""
+          }}
+          accept=".pdf,.png,.jpg,.jpeg,.txt"
+        />
+
+<label
+  htmlFor={`file_${t._id}`}
+  className="btn-action update-btn"
+  style={{
+    display: "inline-block",
+    cursor: "pointer",
+    padding: "6px 12px",
+    borderRadius: "8px",
+    fontWeight: 600,
+  }}
+>
+  Subir entrega
+</label>
+
+      </>
+    )}
   </div>
 )}
 
-
-  {user?.rol === "Admin" && (
-     <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
-     <button onClick={() => onEdit(t)} className="btn-action update-btn">
-       Actualizar
-     </button>
-     <button onClick={() => onDelete(t._id)} className="btn-action delete-btn">
-       Eliminar
-     </button>
-   </div>
-  )}
-</div>
-
+              {user?.rol === "Admin" && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
+                  <div style={{ display: "flex", gap: 10 }}>
+                    <button onClick={() => onEdit(t)} className="btn-action update-btn">Actualizar</button>
+                    <button onClick={() => onDelete(t._id)} className="btn-action delete-btn">Eliminar</button>
+                    <button onClick={() => handleViewSubmissions(t._id)} className="btn-action update-btn">Ver entregas</button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         ))}
       </div>

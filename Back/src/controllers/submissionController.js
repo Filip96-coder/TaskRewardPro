@@ -5,17 +5,27 @@ import Usuario from "../models/usuario.js"
 export const submitTask = async (req, res) => {
   try {
     const taskId = req.params.id
+    const userId = req.user.id
+
     if (!req.file) return res.status(400).json({ message: "Archivo requerido" })
 
-    // crear registro de entrega
+    // eliminar entregas anteriores del mismo usuario para esa tarea
+    await Submission.deleteMany({ task: taskId, user: userId })
+
+    // crear nueva entrega
     const sub = await Submission.create({
       task: taskId,
-      user: req.user.id,
+      user: userId,
       filePath: `/uploads/submissions/${req.file.filename}`,
       originalName: req.file.originalname,
       mimeType: req.file.mimetype,
-      size: req.file.size
+      size: req.file.size,
+      status: "Pendiente",
+      claimed: false
     })
+
+    // asegurar que la tarea vuelva a "Pendiente"
+    await Tarea.findByIdAndUpdate(taskId, { status: "Pendiente" })
 
     res.status(201).json(sub)
   } catch (e) {
@@ -23,6 +33,7 @@ export const submitTask = async (req, res) => {
     res.status(500).json({ message: "Error subiendo entrega" })
   }
 }
+
 
 export const listSubmissionsForTask = async (req, res) => {
   try {
@@ -39,51 +50,80 @@ export const listSubmissionsForTask = async (req, res) => {
 export const mySubmissionForTask = async (req, res) => {
   try {
     const taskId = req.params.id
-    const s = await Submission.findOne({ task: taskId, user: req.user.id })
-    res.json(s || null)
+    const sub = await Submission.findOne({ task: taskId, user: req.user.id })
+    res.json(sub || null)
   } catch (e) {
     res.status(500).json({ message: "Error consultando mi entrega" })
   }
 }
 
-// aprobar o rechazar
+
 export const decideSubmission = async (req, res) => {
   try {
     const { taskId, subId } = req.params
-    const { action, feedback } = req.body // action: "approve" | "reject"
-    const sub = await Submission.findOne({ _id: subId, task: taskId })
-    if (!sub) return res.status(404).json({ message: "Entrega no encontrada" })
+    const { action, feedback } = req.body  
 
-    if (action === "approve") {
-      // marcar aprobada
-      sub.status = "Aprobada"
-      if (feedback) sub.feedback = feedback
-      await sub.save()
-
-      // sumar puntos al usuario sólo si NO estaba ya aprobada
-      const tarea = await Tarea.findById(taskId)
-      if (tarea && tarea.points && sub.status === "Aprobada") {
-        const u = await Usuario.findById(sub.user)
-        // (opcional) evitar dobles sumas si ya había una aprobada:
-        const alreadyApproved = await Submission.findOne({
-          task: taskId, user: sub.user, _id: { $ne: subId }, status: "Aprobada"
-        })
-        if (!alreadyApproved) {
-          u.points = (u.points || 0) + (tarea.points || 0)
-          await u.save()
-        }
-      }
-    } else if (action === "reject") {
-      sub.status = "Rechazada"
-      if (feedback) sub.feedback = feedback
-      await sub.save()
-    } else {
+    if (!["approve", "reject"].includes(action)) {
       return res.status(400).json({ message: "Acción inválida" })
     }
 
-    res.json(sub)
+    const sub = await Submission.findOne({ _id: subId, task: taskId })
+    if (!sub) return res.status(404).json({ message: "Entrega no encontrada" })
+
+    // actualizar estado de la entrega
+    sub.status = action === "approve" ? "Aprobada" : "Rechazada"
+    if (feedback) sub.feedback = feedback
+    await sub.save()
+
+    // actualizar estado de la tarea según la acción
+    const tarea = await Tarea.findById(taskId)
+    if (tarea) {
+      tarea.status = action === "approve" ? "Completada" : "Pendiente"
+      await tarea.save()
+    }
+
+    res.json({ ok: true, submission: sub })
   } catch (e) {
     console.error("❌ decideSubmission:", e)
     res.status(500).json({ message: "Error procesando decisión" })
   }
 }
+
+
+
+
+
+export const claimPoints = async (req, res) => {
+  try {
+    const { taskId } = req.params
+    const userId = req.user.id
+
+    const sub = await Submission.findOne({ task: taskId, user: userId, status: "Aprobada" })
+    if (!sub) {
+      return res.status(400).json({ message: "No tienes entregas aprobadas para reclamar." })
+    }
+
+    if (sub.claimed) {
+      return res.status(400).json({ message: "Ya reclamaste tus puntos por esta tarea." })
+    }
+
+    const tarea = await Tarea.findById(taskId)
+    if (!tarea) return res.status(404).json({ message: "Tarea no encontrada." })
+
+    const usuario = await Usuario.findById(userId)
+    usuario.points = (usuario.points || 0) + (tarea.points || 0)
+    await usuario.save()
+
+    sub.claimed = true
+    await sub.save()
+
+    res.json({ ok: true, claimed: true, message: "Puntos reclamados exitosamente." })
+  } catch (e) {
+    console.error("❌ claimPoints:", e)
+    res.status(500).json({ message: "Error al reclamar puntos." })
+  }
+}
+
+
+
+

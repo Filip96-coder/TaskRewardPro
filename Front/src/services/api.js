@@ -1,5 +1,6 @@
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 console.log("BASE_URL =", BASE_URL)
+export const API_BASE = BASE_URL;
 
 async function http(path, { method = "GET", data, token } = {}) {
   const headers = {}
@@ -67,6 +68,12 @@ export async function submitTaskFile(taskId, file) {
   return http(`/api/tasks/${taskId}/submit`, { method: "POST", data: fd, token })
 }
 
+export async function listUserTasks() {
+  const token = localStorage.getItem("token")
+  return http(`/api/tasks/user/list`, { method: "GET", token })
+}
+
+
 
 export async function listTaskSubmissions(taskId) {
   const token = localStorage.getItem("token")
@@ -76,10 +83,27 @@ export async function listTaskSubmissions(taskId) {
 
 export async function decideSubmission(taskId, subId, action, feedback = "") {
   const token = localStorage.getItem("token")
-  return http(`/api/tasks/${taskId}/submissions/${subId}/decision`, {
+  return http(`/api/tasks/${taskId}/submission/${subId}/decision`, {
     method: "PATCH",
     data: { action, feedback },
     token
   })
 }
+
+export async function completeTask(id) {
+  const token = localStorage.getItem("token")
+  return http(`/api/tasks/${id}`, {
+    method: "PUT",
+    data: { status: "Completada" },
+    token,
+  })
+}
+
+export async function claimPoints(taskId) {
+  const token = localStorage.getItem("token")
+  return http(`/api/tasks/${taskId}/claim`, { method: "POST", token })
+}
+
+
+
 

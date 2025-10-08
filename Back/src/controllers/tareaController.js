@@ -1,5 +1,5 @@
 import Tarea from "../models/tarea.js";
-
+import Submission from "../models/submission.js"
 
 export const crearTarea = async (req, res) => {
   try {
@@ -21,12 +21,44 @@ export const crearTarea = async (req, res) => {
 
 export const obtenerTareas = async (req, res) => {
   try {
-    const tareas = await Tarea.find().sort({ createdAt: -1 });
-    res.json(tareas);
-  } catch (error) {
-    res.status(500).json({ msg: "Error al obtener tareas", error: error.message });
+    const tareas = await Tarea.find({ status: "Pendiente" }).sort({ createdAt: -1 })
+    res.json(tareas)
+  } catch (e) {
+    res.status(500).json({ message: "Error al obtener tareas" })
   }
-};
+}
+
+export const obtenerTareasUsuario = async (req, res) => {
+  try {
+    const userId = req.user.id
+
+    // Buscar todas las tareas (completadas, pendientes o rechazadas)
+    const tareas = await Tarea.find().sort({ createdAt: -1 })
+
+    // Buscar las entregas del usuario
+    const submissions = await Submission.find({ user: userId })
+
+    // Combinar tareas + entregas del usuario
+    const tareasConEntrega = tareas.map((t) => {
+      const sub = submissions.find((s) => s.task.toString() === t._id.toString())
+      return {
+        ...t._doc,
+        mySubmission: sub
+          ? {
+              status: sub.status,
+              claimed: sub.claimed,
+            }
+          : null,
+      }
+    })
+
+    res.json(tareasConEntrega)
+  } catch (e) {
+    console.error("❌ obtenerTareasUsuario:", e)
+    res.status(500).json({ message: "Error al obtener tareas del usuario" })
+  }
+}
+
 
 
 export const actualizarTarea = async (req, res) => {
