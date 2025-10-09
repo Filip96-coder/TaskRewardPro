@@ -1,5 +1,4 @@
 import Usuario from "../models/usuario.js";
-import Lider from "../models/lider.js";
 import Trabajador from "../models/trabajador.js";
 import Admin from "../models/admin.js";
 
@@ -7,9 +6,6 @@ export const crearUsuario = async (req, res) => {
   try {
     let usuario;
     switch (req.body.rol) {
-      case "Lider":
-        usuario = new Lider(req.body);
-        break;
       case "Trabajador":
         usuario = new Trabajador(req.body);
         break;
