@@ -24,38 +24,41 @@ export default function TaskRegister() {
   async function refreshSubmissions() {
     try {
       let tasksFromServer = []
-  
-      
+
       if (user?.rol === "Admin") {
         tasksFromServer = (await listTasks().catch(() => []))
           .filter(t => t.status !== "Completada" && t.status !== "Rechazada")
+        // Para Admin, NO pedir submission
+        setTasks(tasksFromServer)
+        return
       }
-  
-      
+
       else if (user?.rol === "Trabajador") {
         tasksFromServer = await listUserTasks().catch(() => [])
-      }
-  
-      
-      const withSubmissions = await Promise.all(
-        tasksFromServer.map(async (task) => {
-          try {
-            const token = localStorage.getItem("token")
-            const res = await fetch(`${API_BASE}/api/tasks/${task._id}/submission`, {
-              headers: { Authorization: `Bearer ${token}` },
-            })
-            if (res.ok) {
-              const mySubmission = await res.json()
-              return { ...task, mySubmission }
+        // Para Trabajador, sí pedir submission
+        const withSubmissions = await Promise.all(
+          tasksFromServer.map(async (task) => {
+            try {
+              const token = localStorage.getItem("token")
+              const res = await fetch(`${API_BASE}/api/tasks/${task._id}/submission`, {
+                headers: { Authorization: `Bearer ${token}` },
+              })
+              if (res.ok) {
+                const mySubmission = await res.json()
+                return { ...task, mySubmission }
+              }
+            } catch (err) {
+              console.error("❌ Error obteniendo entrega:", err)
             }
-          } catch (err) {
-            console.error("❌ Error obteniendo entrega:", err)
-          }
-          return { ...task }
-        })
-      )
-  
-      setTasks(withSubmissions)
+            return { ...task }
+          })
+        )
+        setTasks(withSubmissions)
+        return
+      }
+
+      // Si no es ninguno, limpiar tareas
+      setTasks([])
     } catch (err) {
       console.error("❌ Error al refrescar tareas:", err)
     }
@@ -63,9 +66,10 @@ export default function TaskRegister() {
   
 
   useEffect(() => {
-    if (!user) return
+    console.log("TaskRegister useEffect: user =", user, "loading =", loading)
+    if (!user || loading) return
     refreshSubmissions()
-  }, [user])
+  }, [user, loading])
 
   
 
@@ -386,7 +390,8 @@ export default function TaskRegister() {
 
 
 
-  if (loading) {
+  if (loading || !user) {
+    console.log("TaskRegister render: loading =", loading, "user =", user)
     return <p>⏳ Cargando...</p>
   }
 

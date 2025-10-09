@@ -48,7 +48,12 @@ export async function createTask(payload) {
 
 export async function listTasks() {
   const token = localStorage.getItem("token")
-  return http("/api/tasks", { method: "GET", token })
+  const res = await fetch(`${API_BASE}/api/tasks`, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  if (!res.ok) return []
+  const data = await res.json()
+  return Array.isArray(data) ? data : []
 }
 
 export async function updateTask(id, data) {

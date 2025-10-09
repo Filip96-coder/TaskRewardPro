@@ -9,7 +9,8 @@ export const crearTarea = async (req, res) => {
       dueDate: req.body.dueDate,
       points: req.body.points,
       attachments: req.body.attachments || [],
-      createdBy: req.user?.id || null
+      createdBy: req.user?.id || null,
+      status: "Pendiente" // <-- Agrega este campo
     });
     const tareaGuardada = await nuevaTarea.save();
     res.status(201).json(tareaGuardada);
@@ -18,13 +19,12 @@ export const crearTarea = async (req, res) => {
     res.status(500).json({ msg: "Error al crear tarea", error: error.message });
   }
 };
-
 export const obtenerTareas = async (req, res) => {
   try {
-    const tareas = await Tarea.find({ status: "Pendiente" }).sort({ createdAt: -1 })
-    res.json(tareas)
+    const tareas = await Tarea.find(); // <-- Debe devolver todas las tareas
+    res.json(tareas);
   } catch (e) {
-    res.status(500).json({ message: "Error al obtener tareas" })
+    res.status(500).json({ msg: "Error al obtener tareas" });
   }
 }
 
@@ -63,7 +63,11 @@ export const obtenerTareasUsuario = async (req, res) => {
 
 export const actualizarTarea = async (req, res) => {
   try {
-    const tareaActualizada = await Tarea.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const tareaActualizada = await Tarea.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true } // <-- Esta opción aplica las validaciones del modelo
+    );
     if (!tareaActualizada) return res.status(404).json({ msg: "Tarea no encontrada" })
     res.json(tareaActualizada);
   } catch (error) {
@@ -81,3 +85,4 @@ export const eliminarTarea = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
