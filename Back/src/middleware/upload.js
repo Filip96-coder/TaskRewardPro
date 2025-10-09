@@ -6,7 +6,7 @@ import { fileURLToPath } from "url"
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-// carpeta donde quedarán las evidencias
+
 const uploadDir = path.resolve(__dirname, "../../uploads/submissions")
 fs.mkdirSync(uploadDir, { recursive: true })
 
@@ -33,5 +33,5 @@ function fileFilter(_req, file, cb) {
 export const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 10 * 1024 * 1024 } // 10MB
+  limits: { fileSize: 10 * 1024 * 1024 }
 })
