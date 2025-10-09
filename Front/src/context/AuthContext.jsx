@@ -14,6 +14,7 @@ export function AuthProvider({ children }) {
       try {
         const me = await getProfile(token)
         setUser(me)
+        console.log("AuthContext: usuario cargado en boot", me)
       } catch (e) {
         console.warn("Token inválido o expirado", e)
         localStorage.removeItem("token")
@@ -28,6 +29,7 @@ export function AuthProvider({ children }) {
     const { token, user } = await apiLogin(email, password)
     localStorage.setItem("token", token)
     setUser(user)
+    console.log("AuthContext: usuario tras login", user)
     return user
   }
 
@@ -35,6 +37,7 @@ export function AuthProvider({ children }) {
     const { token, user } = await apiRegister(data)
     localStorage.setItem("token", token)
     setUser(user)
+    console.log("AuthContext: usuario tras register", user)
     return user
   }
 

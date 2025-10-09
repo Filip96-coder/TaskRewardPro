@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:700|Montserrat:700|Pacifico|Oswald:700|Bebas+Neue|Lobster|Playfair+Display:700&display=swap');
+
 :root{
   --bg:#0b1020;
   --surface:#12172b;
@@ -63,7 +65,7 @@ input:focus{box-shadow:0 0 0 6px var(--ring);border-color:var(--primary)}
   margin-bottom: 15px;
   border: 1px solid #ccc;
   border-radius: 6px;
-  background-color: rgba(13,18,35,.9);
+  background-color: #0d1223e6;
   color:#707275;
   font-size: 16px;
   box-sizing: border-box;
@@ -129,4 +131,46 @@ input:focus{box-shadow:0 0 0 6px var(--ring);border-color:var(--primary)}
   background:#0f1426;
   border:1px solid var(--border);
   font-size:12px;
+}
+
+/* --- Auth layout personalizado --- */
+.register-layout, .login-layout {
+  display: flex;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0d1223e6 0%, #0d1223e6 0%);
+}
+.register-left, .login-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 2.2rem;
+  font-weight: 600;
+  background: none;
+  min-width: 320px;
+  padding: 0 2vw;
+}
+.transicion-palabras h2 {
+  animation: fadeIn 1s;
+  margin: 0;
+  text-shadow: 0 2px 16px rgba(0,0,0,0.18);
+  transition: font-family 0.5s, opacity 0.5s;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+.register-right, .login-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 8vw;
+  background: var(--bg);
+}
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
 }
