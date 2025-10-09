@@ -9,10 +9,10 @@ export const submitTask = async (req, res) => {
 
     if (!req.file) return res.status(400).json({ message: "Archivo requerido" })
 
-    // eliminar entregas anteriores del mismo usuario para esa tarea
+
     await Submission.deleteMany({ task: taskId, user: userId })
 
-    // crear nueva entrega
+
     const sub = await Submission.create({
       task: taskId,
       user: userId,
@@ -24,12 +24,12 @@ export const submitTask = async (req, res) => {
       claimed: false
     })
 
-    // asegurar que la tarea vuelva a "Pendiente"
+
     await Tarea.findByIdAndUpdate(taskId, { status: "Pendiente" })
 
     res.status(201).json(sub)
   } catch (e) {
-    console.error("❌ submitTask:", e)
+    console.error("submitTask:", e)
     res.status(500).json({ message: "Error subiendo entrega" })
   }
 }
@@ -61,7 +61,7 @@ export const mySubmissionForTask = async (req, res) => {
 export const decideSubmission = async (req, res) => {
   try {
     const { taskId, subId } = req.params
-    const { action, feedback } = req.body  
+    const { action, feedback } = req.body
 
     if (!["approve", "reject"].includes(action)) {
       return res.status(400).json({ message: "Acción inválida" })
@@ -70,12 +70,12 @@ export const decideSubmission = async (req, res) => {
     const sub = await Submission.findOne({ _id: subId, task: taskId })
     if (!sub) return res.status(404).json({ message: "Entrega no encontrada" })
 
-    // actualizar estado de la entrega
+
     sub.status = action === "approve" ? "Aprobada" : "Rechazada"
     if (feedback) sub.feedback = feedback
     await sub.save()
 
-    // actualizar estado de la tarea según la acción
+
     const tarea = await Tarea.findById(taskId)
     if (tarea) {
       tarea.status = action === "approve" ? "Completada" : "Pendiente"
@@ -84,7 +84,7 @@ export const decideSubmission = async (req, res) => {
 
     res.json({ ok: true, submission: sub })
   } catch (e) {
-    console.error("❌ decideSubmission:", e)
+    console.error("decideSubmission:", e)
     res.status(500).json({ message: "Error procesando decisión" })
   }
 }
@@ -119,7 +119,7 @@ export const claimPoints = async (req, res) => {
 
     res.json({ ok: true, claimed: true, message: "Puntos reclamados exitosamente." })
   } catch (e) {
-    console.error("❌ claimPoints:", e)
+    console.error("claimPoints:", e)
     res.status(500).json({ message: "Error al reclamar puntos." })
   }
 }

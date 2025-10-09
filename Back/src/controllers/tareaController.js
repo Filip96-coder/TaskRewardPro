@@ -32,29 +32,29 @@ export const obtenerTareasUsuario = async (req, res) => {
   try {
     const userId = req.user.id
 
-    // Buscar todas las tareas (completadas, pendientes o rechazadas)
+
     const tareas = await Tarea.find().sort({ createdAt: -1 })
 
-    // Buscar las entregas del usuario
+
     const submissions = await Submission.find({ user: userId })
 
-    // Combinar tareas + entregas del usuario
+
     const tareasConEntrega = tareas.map((t) => {
       const sub = submissions.find((s) => s.task.toString() === t._id.toString())
       return {
         ...t._doc,
         mySubmission: sub
           ? {
-              status: sub.status,
-              claimed: sub.claimed,
-            }
+            status: sub.status,
+            claimed: sub.claimed,
+          }
           : null,
       }
     })
 
     res.json(tareasConEntrega)
   } catch (e) {
-    console.error("❌ obtenerTareasUsuario:", e)
+    console.error("obtenerTareasUsuario:", e)
     res.status(500).json({ message: "Error al obtener tareas del usuario" })
   }
 }
@@ -74,7 +74,7 @@ export const actualizarTarea = async (req, res) => {
 
 export const eliminarTarea = async (req, res) => {
   try {
-    const tareaEliminada= await Tarea.findByIdAndDelete(req.params.id);
+    const tareaEliminada = await Tarea.findByIdAndDelete(req.params.id);
     if (!tareaEliminada) return res.status(404).json({ msg: "Tarea no encontrada" })
     res.json({ message: "Tarea eliminada correctamente" });
   } catch (error) {

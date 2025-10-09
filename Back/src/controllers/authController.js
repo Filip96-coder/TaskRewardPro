@@ -3,21 +3,19 @@ import jwt from "jsonwebtoken";
 import Usuario from "../models/usuario.js";
 
 function sign(u) {
-  return jwt.sign({ id: u._id, email: u.email,rol:u.rol }, process.env.JWT_SECRET, { expiresIn: "7d" });
+  return jwt.sign({ id: u._id, email: u.email, rol: u.rol }, process.env.JWT_SECRET, { expiresIn: "7d" });
 }
 
 export async function register(req, res) {
   try {
-    console.log("📩 Body recibido:", req.body); // 👈 ver qué llega del front
-
-    const { name = "", email, password,rol } = req.body;
+    const { name = "", email, password, rol } = req.body;
     if (!email || !password || !rol) return res.status(400).json({ message: "Email y password y rol son requeridos" });
 
     const exists = await Usuario.findOne({ email });
     if (exists) return res.status(409).json({ message: "El email ya está registrado" });
 
     const hash = await bcrypt.hash(password, 10);
-    const user = await Usuario.create({ name, email, password: hash,rol, points: 0 });
+    const user = await Usuario.create({ name, email, password: hash, rol, points: 0 });
 
     const token = sign(user);
 
@@ -25,7 +23,7 @@ export async function register(req, res) {
     const safe = { id: user._id, name: user.name, email: user.email, rol: user.rol, points: user.points };
     res.status(201).json({ token, user: safe });
   } catch (e) {
-    console.error("❌ Error en register:", e);
+    console.error("Error en register:", e);
     res.status(500).json({ message: "Error registrando usuario" });
   }
 }
