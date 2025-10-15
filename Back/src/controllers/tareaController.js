@@ -10,18 +10,18 @@ export const crearTarea = async (req, res) => {
       points: req.body.points,
       attachments: req.body.attachments || [],
       createdBy: req.user?.id || null,
-      status: "Pendiente" // <-- Agrega este campo
+      status: "Pendiente" 
     });
     const tareaGuardada = await nuevaTarea.save();
     res.status(201).json(tareaGuardada);
   } catch (error) {
-    console.error("❌ Error al crear tarea:", error);
+    console.error("Error al crear tarea:", error);
     res.status(500).json({ msg: "Error al crear tarea", error: error.message });
   }
 };
 export const obtenerTareas = async (req, res) => {
   try {
-    const tareas = await Tarea.find(); // <-- Debe devolver todas las tareas
+    const tareas = await Tarea.find(); 
     res.json(tareas);
   } catch (e) {
     res.status(500).json({ msg: "Error al obtener tareas" });
@@ -66,7 +66,7 @@ export const actualizarTarea = async (req, res) => {
     const tareaActualizada = await Tarea.findByIdAndUpdate(
       req.params.id,
       req.body,
-      { new: true, runValidators: true } // <-- Esta opción aplica las validaciones del modelo
+      { new: true, runValidators: true }
     );
     if (!tareaActualizada) return res.status(404).json({ msg: "Tarea no encontrada" })
     res.json(tareaActualizada);
