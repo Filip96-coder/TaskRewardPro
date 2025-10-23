@@ -1,10 +1,3 @@
-<!-- # Software construction project for a reward system
-_Our project is a system that seeks to be implemented in any company, what the project seeks is to reward workers with points for completing a task uploaded by the administrator, each worker can apply to any task, at the time of completing it the administrator is in charge of giving the points that the task offers_
-
-## Main features
-_ 1. Mayor Productividad en el trabajo
-  2. Aumento en la participacion de los trabajadores -->
-
 # TaskRewardPro
 A simple reward and task management system for small companies and teams.
 
@@ -16,6 +9,16 @@ The system also supports **goals**, **rankings**, and **role-based access**.
 > Goal: make teamwork more dynamic and recognize individual effort.
 
 ---
+
+## How our project looks
+
+## For the Administrator or manager
+
+![VistaAdmin](Front\public\VistaAdmin.png)
+
+## For the worker
+
+![VistaTrabajador](Front\public\VistaWorker.png)
 
 ## Structure
 
@@ -202,7 +205,9 @@ In `Front/package.json`:
   }
 }
 ```
+## Possible errors
 
+- Dependency error --> This can be fixed by installing the necessary dependencies with the command *npm install “dependency name”*.
 ---
 
 ## Roadmap
