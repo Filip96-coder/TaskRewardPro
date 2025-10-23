@@ -14,15 +14,15 @@ The system also supports **goals**, **rankings**, and **role-based access**.
 
 ## Our logo
 
-![Logo](public\logo-taskreward.png)
+![Logo](public/logo-taskreward.png)
 
 ## For the Administrator or manager
 
-![VistaAdmin](public\VistaAdmin.png)
+![VistaAdmin](public/VistaAdmin.png)
 
 ## For the worker
 
-![VistaTrabajador](public\VistaWorker.png)
+![VistaTrabajador](public/VistaWorker.png)
 
 ## Structure
 
