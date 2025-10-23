@@ -12,13 +12,17 @@ The system also supports **goals**, **rankings**, and **role-based access**.
 
 ## How our project looks
 
+## Our logo
+
+![Logo](public\logo-taskreward.png)
+
 ## For the Administrator or manager
 
-![VistaAdmin](Front\public\VistaAdmin.png)
+![VistaAdmin](public\VistaAdmin.png)
 
 ## For the worker
 
-![VistaTrabajador](Front\public\VistaWorker.png)
+![VistaTrabajador](public\VistaWorker.png)
 
 ## Structure
 
