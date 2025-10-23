@@ -10,7 +10,7 @@ The system also supports **goals**, **rankings**, and **role-based access**.
 
 ---
 
-## How our project looks
+# How our project looks
 
 ## Our logo
 
@@ -20,9 +20,30 @@ The system also supports **goals**, **rankings**, and **role-based access**.
 
 ![VistaAdmin](public/VistaAdmin.png)
 
+## si el administrador desea modificar la tarea
+
+![VistaAdminM](public/Modified.png)
+
+## si desea aprobar o rechazar la tarea subida por el trabajador
+
+![VistaAdminA](public/RejectorApprobe.png)
+
+
 ## For the worker
 
 ![VistaTrabajador](public/VistaWorker.png)
+
+## cuando una tarea esta pendiente de revision
+
+![VistaTrabajadorP](public/Revision.png)
+
+## si la tarea es rechazada
+
+![VistaTrabajadorR](public/Rejected.png)
+
+## si la tarea es aprobada y lista para reclamar los puntos
+
+![VistaTrabajadorA](public/ReclaimPoints.png)
 
 ## Structure
 
