@@ -20,11 +20,11 @@ The system also supports **goals**, **rankings**, and **role-based access**.
 
 ![VistaAdmin](public/VistaAdmin.png)
 
-## si el administrador desea modificar la tarea
+## if the administrator wants to modify the task
 
 ![VistaAdminM](public/Modified.png)
 
-## si desea aprobar o rechazar la tarea subida por el trabajador
+## if you want to approve or reject the task uploaded by the worker
 
 ![VistaAdminA](public/RejectorApprobe.png)
 
@@ -33,15 +33,15 @@ The system also supports **goals**, **rankings**, and **role-based access**.
 
 ![VistaTrabajador](public/VistaWorker.png)
 
-## cuando una tarea esta pendiente de revision
+## when a task is pending review
 
 ![VistaTrabajadorP](public/Revision.png)
 
-## si la tarea es rechazada
+## if the task is rejected
 
 ![VistaTrabajadorR](public/Rejected.png)
 
-## si la tarea es aprobada y lista para reclamar los puntos
+## if the assignment is approved and ready to claim the points
 
 ![VistaTrabajadorA](public/ReclaimPoints.png)
 
