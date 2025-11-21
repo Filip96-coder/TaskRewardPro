@@ -78,13 +78,10 @@ export async function listUserTasks() {
   return http(`/api/tasks/user/list`, { method: "GET", token })
 }
 
-
-
 export async function listTaskSubmissions(taskId) {
   const token = localStorage.getItem("token")
   return http(`/api/tasks/${taskId}/submissions`, { method: "GET", token })
 }
-
 
 export async function decideSubmission(taskId, subId, action, feedback = "") {
   const token = localStorage.getItem("token")
@@ -109,6 +106,28 @@ export async function claimPoints(taskId) {
   return http(`/api/tasks/${taskId}/claim`, { method: "POST", token })
 }
 
+
+// SECCIÓN DE RECOMPENSAS (MOCKS)
+
+
+const MOCK_REWARDS = [
+  { _id: '1', title: 'Día de teletrabajo', cost: 100, description: 'Trabaja desde casa un día a elección.' },
+  { _id: '2', title: 'Salida anticipada', cost: 50, description: 'Sal 2 horas antes el viernes.' },
+  { _id: '3', title: 'Almuerzo gratis', cost: 75, description: 'Bono para almuerzo en cafetería.' },
+  { _id: '4', title: 'Kit de escritorio', cost: 200, description: 'Cuaderno, lapicera premium y mousepad.' },
+];
+
+export async function getRewards() {
+  // Aquí se simula una carga de 500 puntos.
+  return new Promise(resolve => setTimeout(() => resolve(MOCK_REWARDS), 500));
+  
+}
+
+export async function redeemReward(rewardId) {
+  // Aquí se simula un canje exitoso de los puntos.
+  return new Promise(resolve => setTimeout(() => resolve({ success: true }), 800));
+
+}
 
 
 
