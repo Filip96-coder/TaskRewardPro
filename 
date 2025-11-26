@@ -1,0 +1,116 @@
+Merge branch 'ramaMoncada'
+# Please enter a commit message to explain why this merge is necessary,
+# especially if it merges an updated upstream into a topic branch.
+#
+# Lines starting with '#' will be ignored, and an empty message aborts
+# the commit.
+#
+# It looks like you may be committing a merge.
+# If this is not correct, please run
+#	git update-ref -d MERGE_HEAD
+# and try again.
+
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch main
+# Your branch is up to date with 'origin/main'.
+#
+# All conflicts fixed but you are still merging.
+#
+# Changes to be committed:
+#	modified:   Back/src/controllers/tareaController.js
+#	modified:   Back/src/models/tarea.js
+#	new file:   Back/uploads/submissions/1759970188706__Hoja_de_Vida_Juan_Sebastian_Perez_Moncada.pdf
+#	modified:   Front/src/context/AuthContext.jsx
+#	modified:   Front/src/pages/Login.jsx
+#	modified:   Front/src/pages/Register.jsx
+#	modified:   Front/src/pages/TaskRegister.jsx
+#	modified:   Front/src/services/api.js
+#	modified:   Front/src/styles.css
+#	new file:   node_modules/.package-lock.json
+#	new file:   node_modules/sweetalert2/LICENSE
+#	new file:   node_modules/sweetalert2/README.md
+#	new file:   node_modules/sweetalert2/dist/sweetalert2.all.js
+#	new file:   node_modules/sweetalert2/dist/sweetalert2.all.min.js
+#	new file:   node_modules/sweetalert2/dist/sweetalert2.css
+#	new file:   node_modules/sweetalert2/dist/sweetalert2.esm.all.js
+#	new file:   node_modules/sweetalert2/dist/sweetalert2.esm.all.min.js
+#	new file:   node_modules/sweetalert2/dist/sweetalert2.esm.js
+#	new file:   node_modules/sweetalert2/dist/sweetalert2.esm.min.js
+#	new file:   node_modules/sweetalert2/dist/sweetalert2.js
+#	new file:   node_modules/sweetalert2/dist/sweetalert2.min.css
+#	new file:   node_modules/sweetalert2/dist/sweetalert2.min.js
+#	new file:   node_modules/sweetalert2/package.json
+#	new file:   node_modules/sweetalert2/src/SweetAlert.js
+#	new file:   node_modules/sweetalert2/src/buttons-handlers.js
+#	new file:   node_modules/sweetalert2/src/constants.js
+#	new file:   node_modules/sweetalert2/src/globalState.js
+#	new file:   node_modules/sweetalert2/src/instanceMethods.js
+#	new file:   node_modules/sweetalert2/src/instanceMethods/_destroy.js
+#	new file:   node_modules/sweetalert2/src/instanceMethods/close.js
+#	new file:   node_modules/sweetalert2/src/instanceMethods/enable-disable-elements.js
+#	new file:   node_modules/sweetalert2/src/instanceMethods/getInput.js
+#	new file:   node_modules/sweetalert2/src/instanceMethods/hideLoading.js
+#	new file:   node_modules/sweetalert2/src/instanceMethods/update.js
+#	new file:   node_modules/sweetalert2/src/instanceMethods/validation-message.js
+#	new file:   node_modules/sweetalert2/src/keydown-handler.js
+#	new file:   node_modules/sweetalert2/src/popup-click-handler.js
+#	new file:   node_modules/sweetalert2/src/privateMethods.js
+#	new file:   node_modules/sweetalert2/src/privateProps.js
+#	new file:   node_modules/sweetalert2/src/staticMethods.js
+#	new file:   node_modules/sweetalert2/src/staticMethods/argsToParams.js
+#	new file:   node_modules/sweetalert2/src/staticMethods/bindClickHandler.js
+#	new file:   node_modules/sweetalert2/src/staticMethods/dom.js
+#	new file:   node_modules/sweetalert2/src/staticMethods/eventHandlers.js
+#	new file:   node_modules/sweetalert2/src/staticMethods/fire.js
+#	new file:   node_modules/sweetalert2/src/staticMethods/mixin.js
+#	new file:   node_modules/sweetalert2/src/staticMethods/showLoading.js
+#	new file:   node_modules/sweetalert2/src/staticMethods/timer.js
+#	new file:   node_modules/sweetalert2/src/sweetalert2.js
+#	new file:   node_modules/sweetalert2/src/sweetalert2.scss
+#	new file:   node_modules/sweetalert2/src/types.js
+#	new file:   node_modules/sweetalert2/src/utils/DismissReason.js
+#	new file:   node_modules/sweetalert2/src/utils/EventEmitter.js
+#	new file:   node_modules/sweetalert2/src/utils/Timer.js
+#	new file:   node_modules/sweetalert2/src/utils/aria.js
+#	new file:   node_modules/sweetalert2/src/utils/classes.js
+#	new file:   node_modules/sweetalert2/src/utils/defaultInputValidators.js
+#	new file:   node_modules/sweetalert2/src/utils/dom/domUtils.js
+#	new file:   node_modules/sweetalert2/src/utils/dom/getters.js
+#	new file:   node_modules/sweetalert2/src/utils/dom/index.js
+#	new file:   node_modules/sweetalert2/src/utils/dom/init.js
+#	new file:   node_modules/sweetalert2/src/utils/dom/inputUtils.js
+#	new file:   node_modules/sweetalert2/src/utils/dom/parseHtmlToContainer.js
+#	new file:   node_modules/sweetalert2/src/utils/dom/renderers/render.js
+#	new file:   node_modules/sweetalert2/src/utils/dom/renderers/renderActions.js
+#	new file:   node_modules/sweetalert2/src/utils/dom/renderers/renderCloseButton.js
+#	new file:   node_modules/sweetalert2/src/utils/dom/renderers/renderContainer.js
+#	new file:   node_modules/sweetalert2/src/utils/dom/renderers/renderContent.js
+#	new file:   node_modules/sweetalert2/src/utils/dom/renderers/renderFooter.js
+#	new file:   node_modules/sweetalert2/src/utils/dom/renderers/renderIcon.js
+#	new file:   node_modules/sweetalert2/src/utils/dom/renderers/renderImage.js
+#	new file:   node_modules/sweetalert2/src/utils/dom/renderers/renderInput.js
+#	new file:   node_modules/sweetalert2/src/utils/dom/renderers/renderPopup.js
+#	new file:   node_modules/sweetalert2/src/utils/dom/renderers/renderProgressSteps.js
+#	new file:   node_modules/sweetalert2/src/utils/dom/renderers/renderTitle.js
+#	new file:   node_modules/sweetalert2/src/utils/draggable.js
+#	new file:   node_modules/sweetalert2/src/utils/getTemplateParams.js
+#	new file:   node_modules/sweetalert2/src/utils/iosFix.js
+#	new file:   node_modules/sweetalert2/src/utils/isNodeEnv.js
+#	new file:   node_modules/sweetalert2/src/utils/openPopup.js
+#	new file:   node_modules/sweetalert2/src/utils/params.js
+#	new file:   node_modules/sweetalert2/src/utils/scrollbar.js
+#	new file:   node_modules/sweetalert2/src/utils/setParameters.js
+#	new file:   node_modules/sweetalert2/src/utils/utils.js
+#	new file:   node_modules/sweetalert2/sweetalert2.d.ts
+#	new file:   node_modules/sweetalert2/themes/bootstrap-4.css
+#	new file:   node_modules/sweetalert2/themes/borderless.css
+#	new file:   node_modules/sweetalert2/themes/bulma.css
+#	new file:   node_modules/sweetalert2/themes/embed-iframe.css
+#	new file:   node_modules/sweetalert2/themes/material-ui.css
+#	new file:   node_modules/sweetalert2/themes/minimal.css
+#	new file:   package-lock.json
+#	new file:   package.json
+#
