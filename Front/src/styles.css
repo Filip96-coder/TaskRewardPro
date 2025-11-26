@@ -149,7 +149,7 @@ input:focus{box-shadow:0 0 0 6px var(--ring);border-color:var(--primary)}
   font-weight: 600;
   background: none;
   min-width: 320px;
-  padding: 0 2vw;
+  padding: 2vw;
 }
 .transicion-palabras h2 {
   animation: fadeIn 1s;
@@ -166,8 +166,8 @@ input:focus{box-shadow:0 0 0 6px var(--ring);border-color:var(--primary)}
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  padding-left: 8vw;
-  background: var(--bg);
+  padding-left: 2vw;
+  background: #0d1223e6;
 }
 .auth-card {
   width: 100%;
