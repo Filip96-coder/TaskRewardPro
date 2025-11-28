@@ -1,5 +1,5 @@
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
-export const API_BASE = BASE_URL;
+export const API_BASE = BASE_URL; 
 
 async function http(path, { method = "GET", data, token } = {}) {
   const headers = {};
@@ -14,15 +14,26 @@ async function http(path, { method = "GET", data, token } = {}) {
       : undefined,
   });
 
-  if (!res.ok) {
-    let msg = "Error en la solicitud";
+  const text = await res.text();
+  let body = null;
+
+  if (text) {
     try {
-      const j = await res.json();
-      msg = j.message || msg;
-    } catch {}
-    throw new Error(msg);
+      body = JSON.parse(text);
+    } catch (err) {
+      body = text;
+    }
   }
-  return res.json();
+
+  if (!res.ok) {
+    const message =
+    (body && body.msg) ||
+    (body && body.message) ||
+    (body && body.error) ||
+    `Error ${res.status} ${res.statusText}`;
+  throw new Error(message);
+  }
+  return body;
 }
 
 // AUTH
@@ -96,7 +107,7 @@ export async function claimPoints(taskId) {
 // RECOMPENSAS (según schema del back)
 export async function listRewards() {
   const token = localStorage.getItem("token");
-  const res = await fetch(`${API_BASE}/api/rewards`, {
+  const res = await fetch(`${API_BASE}/api/recompensas`, {
     headers: { Authorization: `Bearer ${token}` }
   });
   if (!res.ok) return [];
@@ -108,17 +119,17 @@ export async function getRewards() {
 }
 export async function createReward(payload) {
   const token = localStorage.getItem("token");
-  return http("/api/rewards", { method: "POST", data: payload, token });
+  return http("/api/recompensas", { method: "POST", data: payload, token });
 }
 export async function updateReward(id, data) {
   const token = localStorage.getItem("token");
-  return http(`/api/rewards/${id}`, { method: "PUT", data, token });
+  return http(`/api/recompensas/${id}`, { method: "PUT", data, token });
 }
 export async function deleteReward(id) {
   const token = localStorage.getItem("token");
-  return http(`/api/rewards/${id}`, { method: "DELETE", token });
+  return http(`/api/recompensas/${id}`, { method: "DELETE", token });
 }
 export async function redeemReward(rewardId) {
   const token = localStorage.getItem("token");
-  return http(`/api/rewards/${rewardId}/redeem`, { method: "POST", token });
+  return http(`/api/recompensas/${rewardId}/redeem`, { method: "POST", token });
 }

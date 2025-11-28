@@ -37,6 +37,12 @@ app.use("/uploads", express.static(path.resolve(__dirname, "../uploads")))
 app.get("/health", (req,res) => res.json ({ok: true}));
 
 const PORT = process.env.PORT || 4000;
+
+app.use((req, res) => {
+  console.log("❌ 404 ->", req.method, req.url);
+  res.status(404).json({ msg: "Ruta no encontrada" });
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
 });
