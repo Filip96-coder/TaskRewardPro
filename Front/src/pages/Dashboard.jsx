@@ -1,5 +1,7 @@
 import React from 'react'
 
+
+
 export default function Dashboard(){
 // Estetica temporal :3
     const kpis = {
