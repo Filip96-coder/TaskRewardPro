@@ -7,6 +7,8 @@ import { AuthProvider } from './context/AuthContext.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import TaskRegister from './pages/TaskRegister.jsx'
 import Rewards from './pages/Rewards.jsx'
+import Users from './pages/Users.jsx';
+import Canjes from './pages/Canjes.jsx';
 
 export default function App() {
   return (
@@ -20,6 +22,8 @@ export default function App() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="tareas/registro" element={<TaskRegister />} />
           <Route path="recompensas" element={<Rewards />} />
+          <Route path="usuarios" element={<Users />} />
+          <Route path="canjes" element={<Canjes />} />
         </Route>
 
         <Route path="*" element={<h2 style={{padding:24}}>404</h2>} />

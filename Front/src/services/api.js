@@ -1,6 +1,7 @@
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 export const API_BASE = BASE_URL; 
 
+
 async function http(path, { method = "GET", data, token } = {}) {
   const headers = {};
   if (!(data instanceof FormData)) headers["Content-Type"] = "application/json";
@@ -133,3 +134,21 @@ export async function redeemReward(rewardId) {
   const token = localStorage.getItem("token");
   return http(`/api/recompensas/${rewardId}/redeem`, { method: "POST", token });
 }
+
+//  USUARIOS (Admin) 
+export async function listUsers() {
+  const token = localStorage.getItem("token");
+  return http("/api/users", { method: "GET", token });
+}
+
+export async function updateUser(id, data) {
+  const token = localStorage.getItem("token");
+  return http(`/api/users/${id}`, { method: "PUT", data, token });
+}
+
+//  HISTORIAL DE CANJES 
+export async function listCanjes() {
+  const token = localStorage.getItem("token");
+  return http("/api/canjes", { method: "GET", token });
+}
+
