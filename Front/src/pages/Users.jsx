@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { useAuth } from "../context/AuthContext.jsx";
-import { listUsers, updateUser } from "../services/api.js";
+import { listUsers, updateUser, createUser } from "../services/api.js";
 
 export default function Users() {
   const { user, loading } = useAuth();
@@ -33,16 +33,124 @@ export default function Users() {
     }
   }
 
+  // --- ESTILOS CSS EN JAVASCRIPT PARA LOS FORMULARIOS ---
+  const inputStyle = `
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    background: #2a3b55;
+    border: 1px solid #3f4b5b;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
+  `;
+
+  const labelStyle = `
+    display: block;
+    text-align: left;
+    margin-bottom: 5px;
+    font-size: 13px;
+    color: #bbb;
+    font-weight: 500;
+  `;
+
+  async function handleCreateUser() {
+    const { value: formValues } = await Swal.fire({
+      title: '<h3 style="color:#fff; margin:0 0 20px 0;">Crear Nuevo Usuario</h3>',
+      html: `
+        <div style="text-align: left; padding: 0 10px;">
+          
+          <label style="${labelStyle}">Nombre completo</label>
+          <input id="newName" style="${inputStyle}" placeholder="Ej: Juan Pérez">
+
+          <label style="${labelStyle}">Correo electrónico</label>
+          <input id="newEmail" type="email" style="${inputStyle}" placeholder="usuario@empresa.com">
+
+          <label style="${labelStyle}">Contraseña</label>
+          <input id="newPassword" type="password" style="${inputStyle}" placeholder="Mínimo 6 caracteres">
+
+          <label style="${labelStyle}">Rol de usuario</label>
+          <select id="newRol" style="${inputStyle} cursor: pointer;">
+            <option value="Trabajador">Trabajador</option>
+            <option value="Admin">Administrador</option>
+          </select>
+
+        </div>
+      `,
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: "Crear usuario",
+      cancelButtonText: "Cancelar",
+      background: "#1E1E2F",
+      color: "#FFFFFF",
+      confirmButtonColor: "#00C896",
+      cancelButtonColor: "#E53E3E",
+      customClass: {
+        popup: 'animated fadeInDown' // Opcional: animación suave si te gusta
+      },
+      preConfirm: () => {
+        const name = document.getElementById("newName").value.trim();
+        const email = document.getElementById("newEmail").value.trim();
+        const password = document.getElementById("newPassword").value;
+        const rol = document.getElementById("newRol").value;
+
+        if (!name || !email || !password) {
+          Swal.showValidationMessage("Por favor, completa todos los campos.");
+          return;
+        }
+        if (password.length < 6) {
+          Swal.showValidationMessage("La contraseña es muy corta (mínimo 6).");
+          return;
+        }
+        return { name, email, password, rol };
+      }
+    });
+
+    if (!formValues) return;
+
+    try {
+      const newUser = await createUser(formValues);
+      setUsers(prev => [newUser, ...prev]);
+
+      Swal.fire({
+        icon: "success",
+        title: "¡Usuario Creado!",
+        text: `Se ha registrado a ${formValues.name} correctamente.`,
+        background: "#1E1E2F",
+        color: "#fff",
+        confirmButtonColor: "#00C896"
+      });
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Hubo un problema",
+        text: err.message || "No se pudo crear el usuario.",
+        background: "#1E1E2F",
+        color: "#fff",
+        confirmButtonColor: "#E53E3E"
+      });
+    }
+  }
+
   async function handleEditUser(u) {
     const { value: formValues } = await Swal.fire({
-      title: "Editar usuario",
+      title: '<h3 style="color:#fff; margin-bottom:20px;">Editar Usuario</h3>',
       html: `
-        <input id="name" class="swal2-input" placeholder="Nombre" value="${u.name || ""}">
-        <input id="points" type="number" min="0" class="swal2-input" placeholder="Puntos" value="${u.points || 0}">
-        <select id="rol" class="swal2-input">
-          <option value="Trabajador" ${u.rol === "Trabajador" ? "selected" : ""}>Trabajador</option>
-          <option value="Admin" ${u.rol === "Admin" ? "selected" : ""}>Admin</option>
-        </select>
+        <div style="text-align: left; padding: 0 10px;">
+          <label style="${labelStyle}">Nombre</label>
+          <input id="name" style="${inputStyle}" value="${u.name || ""}">
+          
+          <label style="${labelStyle}">Puntos Acumulados</label>
+          <input id="points" type="number" min="0" style="${inputStyle}" value="${u.points || 0}">
+          
+          <label style="${labelStyle}">Rol</label>
+          <select id="rol" style="${inputStyle}">
+            <option value="Trabajador" ${u.rol === "Trabajador" ? "selected" : ""}>Trabajador</option>
+            <option value="Admin" ${u.rol === "Admin" ? "selected" : ""}>Admin</option>
+          </select>
+        </div>
       `,
       focusConfirm: false,
       showCancelButton: true,
@@ -71,16 +179,18 @@ export default function Users() {
       setUsers(prev => prev.map(x => (x._id === updated._id ? updated : x)));
       Swal.fire({
         icon: "success",
-        title: "Usuario actualizado",
+        title: "Actualizado",
         background: "#1E1E2F",
-        color: "#00C896",
-        confirmButtonColor: "#00C896"
+        color: "#fff",
+        confirmButtonColor: "#00C896",
+        timer: 1500,
+        showConfirmButton: false
       });
     } catch (err) {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "No se pudo actualizar el usuario",
+        text: "No se pudo actualizar",
         background: "#1E1E2F",
         color: "#fff",
         confirmButtonColor: "#E53E3E"
@@ -102,7 +212,13 @@ export default function Users() {
 
   return (
     <div className="card">
-      <h3>Gestión de Usuarios</h3>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+        <h3>Gestión de Usuarios</h3>
+        <button onClick={handleCreateUser} className="btn">
+          + Crear Usuario
+        </button>
+      </div>
+
       <div style={{ marginBottom: 12, opacity: 0.8 }}>
         Total de usuarios: <strong>{users.length}</strong>
       </div>

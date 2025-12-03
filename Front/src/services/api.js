@@ -1,7 +1,6 @@
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 export const API_BASE = BASE_URL; 
 
-
 async function http(path, { method = "GET", data, token } = {}) {
   const headers = {};
   if (!(data instanceof FormData)) headers["Content-Type"] = "application/json";
@@ -105,7 +104,7 @@ export async function claimPoints(taskId) {
   return http(`/api/tasks/${taskId}/claim`, { method: "POST", token });
 }
 
-// RECOMPENSAS (según schema del back)
+// RECOMPENSAS
 export async function listRewards() {
   const token = localStorage.getItem("token");
   const res = await fetch(`${API_BASE}/api/recompensas`, {
@@ -135,10 +134,16 @@ export async function redeemReward(rewardId) {
   return http(`/api/recompensas/${rewardId}/redeem`, { method: "POST", token });
 }
 
-//  USUARIOS (Admin) 
+// USUARIOS (Admin)
 export async function listUsers() {
   const token = localStorage.getItem("token");
   return http("/api/users", { method: "GET", token });
+}
+
+export async function createUser(payload) {
+  const token = localStorage.getItem("token");
+  // POST a /api/users para crear usuario nuevo siendo admin
+  return http("/api/users", { method: "POST", data: payload, token });
 }
 
 export async function updateUser(id, data) {
@@ -146,9 +151,8 @@ export async function updateUser(id, data) {
   return http(`/api/users/${id}`, { method: "PUT", data, token });
 }
 
-//  HISTORIAL DE CANJES 
+// HISTORIAL DE CANJES 
 export async function listCanjes() {
   const token = localStorage.getItem("token");
   return http("/api/canjes", { method: "GET", token });
 }
-
