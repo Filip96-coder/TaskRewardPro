@@ -9,6 +9,7 @@ import TaskRegister from './pages/TaskRegister.jsx'
 import Rewards from './pages/Rewards.jsx'
 import Users from './pages/Users.jsx';
 import Canjes from './pages/Canjes.jsx';
+import Ranking from './pages/Ranking.jsx'
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
           <Route path="recompensas" element={<Rewards />} />
           <Route path="usuarios" element={<Users />} />
           <Route path="canjes" element={<Canjes />} />
+          <Route path="ranking" element={<Ranking />} />
         </Route>
 
         <Route path="*" element={<h2 style={{padding:24}}>404</h2>} />
