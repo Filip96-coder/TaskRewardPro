@@ -156,3 +156,9 @@ export async function listCanjes() {
   const token = localStorage.getItem("token");
   return http("/api/canjes", { method: "GET", token });
 }
+
+// RANKING
+export async function getRanking() {
+  const token = localStorage.getItem("token");
+  return http("/api/rankings", { method: "GET", token });
+}
